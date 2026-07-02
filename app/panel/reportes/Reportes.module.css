@@ -1,0 +1,376 @@
+/* ── Encabezado ──────────────────────────────────────────────────────────── */
+.pageHeader {
+  margin-bottom: 28px;
+}
+.pageTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  color: var(--color-cream);
+  margin: 0 0 4px;
+}
+.pageSubtitle {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-sand);
+  margin: 0;
+}
+
+/* ── Selector ────────────────────────────────────────────────────────────── */
+.selectorWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+  max-width: 380px;
+}
+.selectorLabel {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-amber);
+}
+.selectorSelect {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-cream);
+  background: rgba(20, 16, 13, 0.6);
+  border: 1px solid rgba(245, 239, 228, 0.14);
+  border-radius: 10px;
+  padding: 10px 40px 10px 14px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b5a98a' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  min-height: 44px;
+  transition: border-color 0.2s ease;
+}
+.selectorSelect:hover {
+  border-color: rgba(242, 184, 75, 0.35);
+}
+.selectorSelect:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.12);
+}
+.selectorSelect option {
+  background: #1e1610;
+  color: var(--color-cream);
+}
+
+/* ── Sección del gráfico ─────────────────────────────────────────────────── */
+.chartSection {
+  background: rgba(61, 42, 27, 0.3);
+  border: 1px solid rgba(245, 239, 228, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.chartTitle {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-cream);
+  margin: 0;
+}
+
+/* ── Período toggle ──────────────────────────────────────────────────────── */
+.periodoGroup {
+  display: flex;
+  border: 1px solid rgba(245, 239, 228, 0.14);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.periodoBtn {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-sand);
+  background: transparent;
+  border: none;
+  padding: 8px 20px;
+  cursor: pointer;
+  min-height: 36px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.periodoBtn + .periodoBtn {
+  border-left: 1px solid rgba(245, 239, 228, 0.14);
+}
+.periodoBtn:hover:not(:disabled) {
+  background: rgba(242, 184, 75, 0.08);
+  color: var(--color-cream);
+}
+.periodoBtn:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: -2px;
+}
+.periodoBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.periodoBtnActive {
+  background: rgba(242, 184, 75, 0.15) !important;
+  color: var(--color-gold) !important;
+}
+
+/* ── Área del chart ──────────────────────────────────────────────────────── */
+.chartWrap {
+  /* Recharts ResponsiveContainer mide el padre; no agregar overflow:hidden aquí */
+  min-height: 320px;
+}
+
+/* Platillos: scroll horizontal en móvil */
+.platillosScroll {
+  overflow-x: auto;
+}
+.platillosInner {
+  min-width: 400px;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────────────── */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 24px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-sand);
+}
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(242, 184, 75, 0.2);
+  border-top-color: var(--color-gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Sin datos ───────────────────────────────────────────────────────────── */
+.sinDatosState {
+  text-align: center;
+  padding: 60px 24px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-sand);
+}
+
+/* ── Error ───────────────────────────────────────────────────────────────── */
+.errorState {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: #f87171;
+  padding: 14px 16px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 10px;
+  margin: 0;
+}
+
+/* ── Estado vacío (sin reporte) ──────────────────────────────────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 64px 24px;
+  border: 1px dashed rgba(245, 239, 228, 0.14);
+  border-radius: 20px;
+  background: rgba(61, 42, 27, 0.18);
+}
+.emptyIcon {
+  color: var(--color-amber);
+  opacity: 0.55;
+  margin-bottom: 16px;
+  display: flex;
+}
+.emptyTitle {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-cream);
+  margin: 0 0 8px;
+}
+.emptyDesc {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--color-sand);
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.65;
+}
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────── */
+.tooltip {
+  background: rgba(18, 13, 10, 0.96);
+  border: 1px solid rgba(245, 239, 228, 0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  pointer-events: none;
+}
+.tooltipFecha {
+  font-size: 12px;
+  color: var(--color-sand);
+  margin: 0 0 4px;
+}
+.tooltipValor {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-gold);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .chartSection {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 16px;
+  }
+  .chartHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .selectorWrap {
+    max-width: 100%;
+  }
+}
+
+/* ── Upsell (plan Gratis) ────────────────────────────────────────────────── */
+.upsellCard {
+  background: linear-gradient(160deg, rgba(61, 42, 27, 0.98), rgba(20, 16, 13, 0.99));
+  border: 1px solid rgba(242, 184, 75, 0.18);
+  border-radius: 24px;
+  padding: clamp(24px, 4vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.upsellMensaje {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(1.125rem, 2.4vw, 1.375rem);
+  color: var(--color-cream);
+  line-height: 1.35;
+  margin: 0 0 18px;
+}
+.upsellSub {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-amber);
+  margin: 0 0 16px;
+  text-transform: uppercase;
+}
+.upsellPlanes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.upsellPlan {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 16px;
+  background: rgba(20, 16, 13, 0.4);
+  border: 1px solid rgba(245, 239, 228, 0.1);
+  border-radius: 16px;
+}
+.upsellPlanNombre {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-cream);
+  margin: 0;
+}
+.upsellPlanPrecio {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-gold);
+}
+.upsellPlanDesc {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--color-sand);
+  line-height: 1.55;
+  margin: 0;
+}
+.upsellTextarea {
+  display: block;
+  width: 100%;
+  min-height: 90px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(245, 239, 228, 0.16);
+  background: rgba(20, 16, 13, 0.45);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.upsellTextarea::placeholder { color: rgba(201, 188, 166, 0.5); }
+.upsellTextarea:focus-visible {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.2);
+}
+.upsellFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+.upsellBtn {
+  min-height: 48px;
+  padding: 0 28px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-amber));
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.upsellBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(242, 184, 75, 0.3);
+}
+.upsellBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .upsellPlanes { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; border-top-color: var(--color-gold); }
+  .upsellBtn { transition: none; }
+}

@@ -1,0 +1,461 @@
+.hero {
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--color-espresso);
+  color: var(--color-cream);
+}
+
+/* ---------- Video background (full-bleed) ---------- */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.bg video,
+.bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ---------- Scrim: dark left fading to transparent ~65% ---------- */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(8, 8, 11, 0.92) 0%,
+    rgba(8, 8, 11, 0.85) 18%,
+    rgba(8, 8, 11, 0.55) 45%,
+    rgba(8, 8, 11, 0.18) 58%,
+    rgba(8, 8, 11, 0) 65%
+  );
+}
+
+/* ---------- Vignette: darker top + bottom for cinematic depth ---------- */
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(8, 8, 11, 0.55) 0%, rgba(8, 8, 11, 0) 22%),
+    linear-gradient(0deg, rgba(8, 8, 11, 0.62) 0%, rgba(8, 8, 11, 0) 26%),
+    radial-gradient(120% 90% at 50% 45%, rgba(8, 8, 11, 0) 55%, rgba(8, 8, 11, 0.4) 100%);
+}
+
+/* ---------- Content shell ---------- */
+.shell {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 clamp(20px, 5vw, 72px);
+}
+
+/* ---------- Navbar ---------- */
+.nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(20px, 3vw, 34px) 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--color-cream);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(20px, 1.7vw, 26px);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.brandMark {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(120% 120% at 30% 25%, var(--color-gold), var(--color-caramel));
+  color: var(--color-espresso);
+  font-weight: 800;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  box-shadow: 0 0 0 1px rgba(224, 162, 78, 0.5), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.brand b {
+  color: var(--color-amber);
+  font-weight: 700;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 1.8vw, 30px);
+  list-style: none;
+}
+.navLink {
+  color: var(--color-cream);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  opacity: 0.86;
+  position: relative;
+  padding: 6px 0;
+  transition: opacity 0.25s var(--ease), color 0.25s var(--ease);
+  white-space: nowrap;
+}
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+.navLink:hover {
+  opacity: 1;
+  color: var(--color-amber);
+}
+.navLink:hover::after {
+  transform: scaleX(1);
+}
+
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 0;
+  cursor: pointer;
+}
+.loginIcon {
+  display: inline-flex;
+}
+.loginText {
+  display: none;
+}
+@media (min-width: 769px) {
+  .loginBtn {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    border: 1px solid rgba(245, 239, 228, 0.28);
+    background: rgba(20, 16, 13, 0.4);
+    border-radius: 50%;
+    backdrop-filter: blur(6px);
+    transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .loginBtn:hover {
+    border-color: var(--color-amber);
+    color: var(--color-amber);
+  }
+}
+
+.burger {
+  display: none;
+  border: 1px solid rgba(245, 239, 228, 0.28);
+  background: rgba(20, 16, 13, 0.4);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
+  place-items: center;
+  flex: none;
+}
+.burger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-cream);
+  border-radius: 2px;
+  position: relative;
+  transition: transform 0.3s var(--ease), opacity 0.2s var(--ease);
+}
+.burger span::before,
+.burger span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: var(--color-cream);
+  border-radius: 2px;
+  transition: transform 0.3s var(--ease);
+}
+.burger span::before {
+  top: -6px;
+}
+.burger span::after {
+  top: 6px;
+}
+.navOpen .burger span {
+  background: transparent;
+}
+.navOpen .burger span::before {
+  transform: translateY(6px) rotate(45deg);
+}
+.navOpen .burger span::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ---------- Hero copy (left, max ~50%) ---------- */
+.heroMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding-bottom: clamp(40px, 7vh, 90px);
+}
+.copy {
+  max-width: 50%;
+  width: min(640px, 50%);
+}
+
+.copyTitle {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-cream);
+  font-size: clamp(40px, 5vw, 76px);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
+}
+.copyTitle em {
+  font-style: italic;
+  color: var(--color-amber);
+}
+
+.copySub {
+  margin-top: clamp(18px, 2.4vh, 28px);
+  color: var(--color-sand);
+  font-size: clamp(16px, 1.25vw, 20px);
+  line-height: 1.55;
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+
+.copyActions {
+  margin-top: clamp(26px, 3.4vh, 38px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 999px;
+  padding: 15px 28px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform 0.25s var(--ease), box-shadow 0.3s var(--ease),
+    background 0.25s var(--ease), filter 0.25s var(--ease);
+}
+.btnPrimary {
+  background: var(--color-gold);
+  color: var(--color-espresso);
+  box-shadow: 0 10px 30px rgba(242, 184, 75, 0.28);
+}
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 38px rgba(242, 184, 75, 0.4);
+}
+.btnPrimary svg {
+  transition: transform 0.25s var(--ease);
+}
+.btnPrimary:hover svg {
+  transform: translateX(4px);
+}
+
+.btnOutline {
+  background: transparent;
+  color: var(--color-cream);
+  border-color: rgba(245, 239, 228, 0.55);
+}
+.btnOutline:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-cream);
+  background: rgba(245, 239, 228, 0.08);
+}
+
+.copyNote {
+  margin-top: clamp(18px, 2.2vh, 24px);
+  font-size: 14.5px;
+  color: var(--color-sand);
+  line-height: 1.5;
+}
+.copyNote a {
+  color: var(--color-amber);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(224, 162, 78, 0.4);
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.copyNote a:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+/* ---------- Staggered entrance animations ---------- */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .anim {
+    animation: riseIn 0.9s var(--ease) both;
+  }
+  .nav {
+    animation: riseIn 0.8s var(--ease) both;
+  }
+  .delay1 {
+    animation-delay: 0.15s;
+  }
+  .delay2 {
+    animation-delay: 0.3s;
+  }
+  .delay3 {
+    animation-delay: 0.45s;
+  }
+  .delay4 {
+    animation-delay: 0.6s;
+  }
+}
+
+/* ---------- Responsive: mobile ---------- */
+@media (max-width: 768px) {
+  .navLinks {
+    position: absolute;
+    top: 76px;
+    left: clamp(20px, 5vw, 72px);
+    right: clamp(20px, 5vw, 72px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    background: rgba(20, 16, 13, 0.92);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(138, 90, 52, 0.4);
+    border-radius: 18px;
+    padding: 14px 18px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 0.28s var(--ease), transform 0.28s var(--ease);
+    z-index: 5;
+  }
+  .navLink {
+    width: 100%;
+    padding: 12px 6px;
+    font-size: 16px;
+    opacity: 0.92;
+  }
+  .loginIcon {
+    display: none;
+  }
+  .loginText {
+    display: inline;
+  }
+  .loginBtn {
+    width: 100%;
+    padding: 12px 6px;
+    font-size: 16px;
+    opacity: 0.92;
+  }
+  .navOpen .navLinks {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .burger {
+    display: grid;
+  }
+
+  /* scrim becomes vertical: dark bottom -> transparent top */
+  .scrim {
+    background: linear-gradient(
+      0deg,
+      rgba(8, 8, 11, 0.94) 0%,
+      rgba(8, 8, 11, 0.85) 24%,
+      rgba(8, 8, 11, 0.5) 50%,
+      rgba(8, 8, 11, 0.1) 72%,
+      rgba(8, 8, 11, 0) 88%
+    );
+  }
+  .vignette {
+    background:
+      linear-gradient(180deg, rgba(8, 8, 11, 0.5) 0%, rgba(8, 8, 11, 0) 18%),
+      radial-gradient(140% 100% at 50% 60%, rgba(8, 8, 11, 0) 55%, rgba(8, 8, 11, 0.35) 100%);
+  }
+
+  .heroMain {
+    align-items: flex-end;
+    padding-bottom: clamp(48px, 9vh, 84px);
+  }
+  .copy {
+    max-width: 85%;
+    width: 85%;
+  }
+  .copySub {
+    max-width: none;
+  }
+  .copyActions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 440px) {
+  .copy {
+    max-width: 100%;
+    width: 100%;
+  }
+  .copyActions {
+    flex-direction: column;
+  }
+  .copyActions .btn {
+    width: 100%;
+  }
+}

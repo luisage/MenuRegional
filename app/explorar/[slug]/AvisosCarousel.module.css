@@ -1,0 +1,365 @@
+/* ─────────────────────────────────────────────────────────────────────
+   AvisosCarousel.module.css — auto-rotating restaurant notices/promos
+   ───────────────────────────────────────────────────────────────────── */
+
+.section {
+  margin-bottom: 40px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  font-family: var(--font-serif);
+  font-size: 1.3125rem;
+  font-weight: 700;
+  color: var(--color-amber);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(242, 184, 75, 0.4) 0%, transparent 100%);
+}
+
+/* ── Carousel shell ──────────────────────────────────────────────────── */
+.carousel {
+  position: relative;
+}
+
+.viewport {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.track {
+  --visible: 1;
+  --gap: 14px;
+  --cardWidth: calc((100% - var(--gap) * (var(--visible) - 1)) / var(--visible));
+  --step: calc(var(--cardWidth) + var(--gap));
+  display: flex;
+  transform: translateX(calc(-1 * var(--index, 0) * var(--step)));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .track {
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+
+@media (min-width: 768px) {
+  .track {
+    --visible: 2;
+    --gap: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .track {
+    --visible: 3;
+    --gap: 20px;
+  }
+}
+
+/* ── Card ────────────────────────────────────────────────────────────── */
+.card {
+  flex: 0 0 var(--cardWidth);
+  margin-right: var(--gap);
+  display: flex;
+  flex-direction: column;
+}
+.card:last-child {
+  margin-right: 0;
+}
+
+.imageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 10 / 7;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(245, 239, 228, 0.05);
+  border: 1px solid rgba(245, 239, 228, 0.09);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.3);
+}
+
+.imgBtn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.imgBtn:hover .image {
+  transform: scale(1.04);
+}
+
+.imgBtn:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 6px 0;
+  box-sizing: border-box;
+}
+
+.descripcion {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  line-height: 1.4;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+.fecha {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--color-sand);
+  line-height: 1.45;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+/* ── Fallback card (sin imagen) ──────────────────────────────────────── */
+.noImg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 20px;
+  border-radius: 18px;
+  background: linear-gradient(
+    145deg,
+    rgba(61, 42, 27, 0.45) 0%,
+    rgba(20, 16, 13, 0.38) 100%
+  );
+  border: 1px solid rgba(245, 239, 228, 0.09);
+  color: var(--color-gold);
+}
+
+.noImgDesc {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.noImgFecha {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-sand);
+  margin: 0;
+}
+
+/* ── Arrows ──────────────────────────────────────────────────────────── */
+.arrow {
+  position: absolute;
+  top: 36%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 239, 228, 0.25);
+  background: rgba(20, 16, 13, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--color-cream);
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.arrow:hover {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: var(--color-espresso);
+}
+.arrow:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 3px;
+}
+.arrowPrev {
+  left: 12px;
+}
+.arrowNext {
+  right: 12px;
+}
+
+/* ── Dots ────────────────────────────────────────────────────────────── */
+.dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+.dot {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(245, 239, 228, 0.25);
+  transition: background 0.2s, transform 0.2s;
+}
+.dot:hover::before {
+  background: rgba(245, 239, 228, 0.5);
+}
+.dot:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+.dotActive::before {
+  background: var(--color-gold);
+  transform: scale(1.2);
+}
+
+/* ── Visually hidden live region ─────────────────────────────────────── */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Lightbox ────────────────────────────────────────────────────────── */
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 10, 8, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 24px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lightboxOverlay {
+    animation: lightboxFadeIn 0.2s ease both;
+  }
+}
+
+@keyframes lightboxFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightboxImg {
+  max-width: min(100%, 880px);
+  max-height: 88dvh;
+  width: auto;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  object-fit: contain;
+  display: block;
+}
+
+.lightboxCloseBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(245, 239, 228, 0.1);
+  border: 1px solid rgba(245, 239, 228, 0.16);
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  z-index: 1;
+}
+.lightboxCloseBtn:hover {
+  background: rgba(245, 239, 228, 0.18);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .arrow {
+    width: 36px;
+    height: 36px;
+  }
+  .arrowPrev {
+    left: 8px;
+  }
+  .arrowNext {
+    right: 8px;
+  }
+}
+
+/* Tamaño reducido (30%) solo en celular — tablet y desktop sin cambios */
+@media (max-width: 767px) {
+  .carousel {
+    max-width: 70%;
+    margin: 0 auto;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .image,
+  .lightboxOverlay {
+    transition: none;
+    animation: none;
+  }
+}

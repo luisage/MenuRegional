@@ -1,0 +1,570 @@
+/* ── Variables locales ── */
+.restauranteHeader {
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(28px, 4vw, 44px) clamp(20px, 4vw, 40px);
+  background: linear-gradient(
+    160deg,
+    rgba(61, 42, 27, 0.55) 0%,
+    rgba(20, 16, 13, 0.45) 100%
+  );
+  border: 1px solid rgba(245, 239, 228, 0.12);
+  border-radius: 22px;
+  margin-bottom: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow decorativo detrás del logo */
+.restauranteHeader::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(242, 184, 75, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Cuando hay imagen de portada, se oculta el glow decorativo */
+.conPortada::before {
+  display: none;
+}
+
+/* ── Imagen de portada (fondo del header) ── */
+.coverImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.coverScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 16, 13, 0.45) 0%,
+    rgba(20, 16, 13, 0.78) 100%
+  );
+  pointer-events: none;
+}
+.headerContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Logo ── */
+.logoWrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid var(--color-gold);
+  box-shadow:
+    0 0 0 5px rgba(242, 184, 75, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.logoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-caramel));
+  font-family: var(--font-serif);
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--color-espresso);
+  border: 2.5px solid rgba(242, 184, 75, 0.5);
+  box-shadow:
+    0 0 0 5px rgba(242, 184, 75, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Nombre restaurante ── */
+.restauranteNombre {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 700;
+  color: var(--color-cream);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.restauranteSubtitle {
+  margin-top: 6px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  opacity: 0.75;
+}
+
+/* ── Empty state ── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 24px;
+  gap: 12px;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(242, 184, 75, 0.08);
+  border: 1px solid rgba(242, 184, 75, 0.18);
+  color: var(--color-gold);
+  opacity: 0.7;
+}
+
+.emptyTitle {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-cream);
+}
+
+.emptyDesc {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-sand);
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+.emptyDesc strong {
+  color: var(--color-amber);
+}
+
+/* ── Contenedor del menú ── */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* ── Sección por categoría ── */
+.categoriaSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.categoriaHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.categoriaNombre {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-amber);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.categoriaLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(242, 184, 75, 0.45) 0%,
+    transparent 100%
+  );
+}
+
+/* ── Grid de platillos ── */
+.platillosGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+/* ── Tarjeta de platillo ── */
+.platilloCard {
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 14px 14px 14px;
+  background: linear-gradient(
+    145deg,
+    rgba(61, 42, 27, 0.42) 0%,
+    rgba(20, 16, 13, 0.36) 100%
+  );
+  border: 1px solid rgba(245, 239, 228, 0.09);
+  border-radius: 16px;
+  transition:
+    background 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Acento lateral sutil */
+.platilloCard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--color-gold), var(--color-caramel));
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+}
+
+.platilloCard:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(61, 42, 27, 0.58) 0%,
+    rgba(20, 16, 13, 0.48) 100%
+  );
+  border-color: rgba(245, 239, 228, 0.16);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+}
+
+.platilloCard:hover::before {
+  opacity: 1;
+}
+
+/* ── Imagen ── */
+.cardImgWrap {
+  flex-shrink: 0;
+  width: 82px;
+  height: 82px;
+}
+
+.cardImg {
+  width: 82px;
+  height: 82px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: rgba(245, 239, 228, 0.06);
+  border: 1px solid rgba(245, 239, 228, 0.1);
+  display: block;
+}
+
+.cardImgPlaceholder {
+  width: 82px;
+  height: 82px;
+  border-radius: 12px;
+  background: rgba(245, 239, 228, 0.05);
+  border: 1px solid rgba(245, 239, 228, 0.09);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(201, 188, 166, 0.35);
+}
+
+/* ── Contenido ── */
+.cardContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cardNombre {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-cream);
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cardDesc {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: rgba(201, 188, 166, 0.58);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardCosto {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-gold);
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+}
+
+/* ── Acciones ── */
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.cardBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  color: rgba(201, 188, 166, 0.4);
+  text-decoration: none;
+}
+
+.cardBtnEdit:hover,
+.cardBtnEdit:focus-visible {
+  background: rgba(242, 184, 75, 0.12);
+  color: var(--color-gold);
+}
+
+.cardBtnDelete:hover,
+.cardBtnDelete:focus-visible {
+  background: rgba(192, 57, 43, 0.12);
+  color: #ff9b8a;
+}
+
+.cardBtn:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 1px;
+}
+
+/* ── Modal ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 6, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: linear-gradient(160deg, rgba(61, 42, 27, 0.95), rgba(20, 16, 13, 0.97));
+  border: 1px solid rgba(245, 239, 228, 0.12);
+  border-radius: 18px;
+  padding: 28px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modalTitle {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-cream);
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-sand);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.modalClose:hover {
+  background: rgba(245, 239, 228, 0.08);
+  color: var(--color-cream);
+}
+
+.modalClose:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+.confirmText {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--color-cream);
+  line-height: 1.5;
+}
+
+.confirmSub {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-sand);
+  line-height: 1.55;
+}
+
+.confirmSub strong {
+  color: var(--color-cream);
+}
+
+.confirmSub em {
+  color: var(--color-amber);
+  font-style: normal;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.btnSecondary {
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid rgba(245, 239, 228, 0.18);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-sand);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btnSecondary:hover {
+  border-color: var(--color-cream);
+  color: var(--color-cream);
+}
+
+.btnDanger {
+  min-height: 42px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 9px;
+  background: rgba(192, 57, 43, 0.22);
+  color: #ff9b8a;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  transition: background 0.15s;
+}
+
+.btnDanger:hover {
+  background: rgba(192, 57, 43, 0.38);
+}
+
+.btnDanger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .platillosGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .platilloCard {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .cardImgWrap,
+  .cardImg,
+  .cardImgPlaceholder {
+    width: 74px;
+    height: 74px;
+  }
+
+  .cardCosto {
+    font-size: 16px;
+  }
+
+  .restauranteHeader {
+    padding: 24px 20px;
+    margin-bottom: 28px;
+    border-radius: 18px;
+  }
+
+  .logo,
+  .logoPlaceholder {
+    width: 76px;
+    height: 76px;
+  }
+
+  .menu {
+    gap: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .modal {
+    animation: none;
+  }
+}

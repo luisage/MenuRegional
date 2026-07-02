@@ -1,0 +1,705 @@
+/* ─────────────────────────────────────────────────────────────────────
+   Carrito.module.css — checkout / pedido screen
+   ───────────────────────────────────────────────────────────────────── */
+
+/* ── Full-screen overlay ─────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--color-espresso);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--color-cream);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .overlay {
+    animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 60px;
+  background: rgba(20, 16, 13, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(242, 184, 75, 0.08);
+  flex-shrink: 0;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-sand);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  min-height: 44px;
+  min-width: 44px;
+  transition: color 0.15s;
+}
+
+.backBtn:hover {
+  color: var(--color-cream);
+}
+
+.headerTitle {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.headerRight {
+  width: 80px; /* balance the back button */
+}
+
+/* ── Scrollable body ─────────────────────────────────────────────────── */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(242, 184, 75, 0.15) transparent;
+  padding-bottom: 16px;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────── */
+.seccion {
+  padding: 20px 20px 0;
+}
+
+.seccion + .seccion {
+  margin-top: 24px;
+}
+
+.seccionTitulo {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber);
+  margin: 0 0 12px;
+}
+
+.separator {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(242, 184, 75, 0.2) 0%, transparent 80%);
+  margin: 0 20px;
+}
+
+/* ── Platillos ───────────────────────────────────────────────────────── */
+.platillosList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.platilloItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  background: linear-gradient(145deg, rgba(61, 42, 27, 0.4) 0%, rgba(20, 16, 13, 0.32) 100%);
+  border: 1px solid rgba(245, 239, 228, 0.08);
+  border-radius: 14px;
+}
+
+.platilloImgWrap {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(245, 239, 228, 0.06);
+  border: 1px solid rgba(245, 239, 228, 0.08);
+}
+
+.platilloImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.platilloNoImg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(201, 188, 166, 0.25);
+  font-size: 1.5rem;
+}
+
+.platilloInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.platilloNombre {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  line-height: 1.3;
+  margin: 0 0 4px;
+}
+
+.platilloPersonaliz {
+  font-size: 0.78rem;
+  color: rgba(201, 188, 166, 0.6);
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.platilloPersonaliz span {
+  display: block;
+}
+
+.platilloCosto {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--color-gold);
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+  display: block;
+}
+
+/* ── Controles de cantidad — píldora horizontal ───────────────────────── */
+.platilloControles {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  align-self: center;
+  background: rgba(61, 42, 27, 0.6);
+  border: 1.5px solid rgba(242, 184, 75, 0.22);
+  border-radius: 100px;
+  overflow: hidden;
+  gap: 0;
+}
+
+.controlBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: none;
+  border: none;
+  color: var(--color-gold);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.controlBtn:hover:not(:disabled) {
+  background: rgba(242, 184, 75, 0.14);
+}
+
+.controlBtn:active:not(:disabled) {
+  background: rgba(242, 184, 75, 0.22);
+}
+
+.controlBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.controlBtnTrash {
+  color: #e57373;
+}
+
+.controlBtnTrash:hover:not(:disabled) {
+  background: rgba(229, 115, 115, 0.12);
+  color: #ef9a9a;
+}
+
+.controlCantidad {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  min-width: 28px;
+  text-align: center;
+  line-height: 1;
+  border-left: 1px solid rgba(242, 184, 75, 0.15);
+  border-right: 1px solid rgba(242, 184, 75, 0.15);
+  padding: 0 4px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Form fields ─────────────────────────────────────────────────────── */
+.campoLabel {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-sand);
+  margin-bottom: 8px;
+}
+
+.selectField,
+.textareaField,
+.inputTextField,
+.inputNumField {
+  width: 100%;
+  background: rgba(61, 42, 27, 0.5);
+  border: 1px solid rgba(245, 239, 228, 0.12);
+  border-radius: 12px;
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.selectField:focus,
+.textareaField:focus,
+.inputTextField:focus,
+.inputNumField:focus {
+  border-color: rgba(242, 184, 75, 0.45);
+  background: rgba(61, 42, 27, 0.65);
+}
+
+.selectField:disabled,
+.textareaField:disabled,
+.inputTextField:disabled,
+.inputNumField:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selectField {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 13px 42px 13px 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23C9BCA6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+.selectField option {
+  background-color: #1a110a;
+  color: var(--color-cream);
+}
+
+.textareaField {
+  padding: 13px 16px;
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.6;
+}
+
+.textareaField::placeholder {
+  color: rgba(201, 188, 166, 0.35);
+}
+
+.inputTextField {
+  padding: 13px 16px;
+}
+
+.inputTextField::placeholder {
+  color: rgba(201, 188, 166, 0.35);
+}
+
+.inputNumField {
+  padding: 13px 16px;
+  max-width: 160px;
+}
+
+.inputNumField::placeholder {
+  color: rgba(201, 188, 166, 0.35);
+}
+
+.inputError {
+  border-color: rgba(229, 115, 115, 0.6) !important;
+  background: rgba(192, 57, 43, 0.08) !important;
+}
+
+.campoErrorMsg {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e57373;
+  margin: 6px 0 0;
+}
+
+/* ── Location section ────────────────────────────────────────────────── */
+.ubicacionTexto {
+  font-size: 0.875rem;
+  color: var(--color-sand);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.cambiarDireccionBtn {
+  display: inline;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+  margin-bottom: 14px;
+}
+
+.cambiarDireccionBtn:hover {
+  color: #f5c940;
+}
+
+.mapaWrap {
+  height: 260px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(242, 184, 75, 0.15);
+  margin-bottom: 12px;
+  background: rgba(61, 42, 27, 0.3);
+}
+
+.mapaLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.875rem;
+  color: var(--color-sand);
+  font-style: italic;
+}
+
+.coordRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.coordWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.coordLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(201, 188, 166, 0.6);
+  letter-spacing: 0.04em;
+}
+
+.coordValue {
+  display: block;
+  padding: 10px 14px;
+  background: rgba(20, 16, 13, 0.5);
+  border: 1px solid rgba(245, 239, 228, 0.08);
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  font-variant-numeric: tabular-nums;
+  min-height: 42px;
+}
+
+.coordEmpty {
+  color: rgba(201, 188, 166, 0.3);
+}
+
+.mapaHint {
+  font-size: 0.78rem;
+  color: rgba(201, 188, 166, 0.45);
+  margin: 8px 0 0;
+  text-align: center;
+  font-style: italic;
+}
+
+.errorUbicacion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(192, 57, 43, 0.15);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #e57373;
+  margin-top: 10px;
+}
+
+.fueraDeRangoMsg {
+  padding: 10px 14px;
+  background: rgba(192, 57, 43, 0.15);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #e57373;
+  margin-top: 10px;
+}
+
+/* ── Cost summary ────────────────────────────────────────────────────── */
+.resumenCard {
+  background: linear-gradient(145deg, rgba(61, 42, 27, 0.35) 0%, rgba(20, 16, 13, 0.28) 100%);
+  border: 1px solid rgba(245, 239, 228, 0.07);
+  border-radius: 14px;
+  padding: 4px 0;
+}
+
+.resumenRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+}
+
+.resumenRow + .resumenRow {
+  border-top: 1px solid rgba(245, 239, 228, 0.06);
+}
+
+.resumenLabel {
+  font-size: 0.9rem;
+  color: var(--color-sand);
+}
+
+.resumenValor {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-cream);
+}
+
+.resumenRowTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(242, 184, 75, 0.18);
+  margin-top: 2px;
+}
+
+.resumenTotalLabel {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-cream);
+}
+
+.resumenTotalValor {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-gold);
+  letter-spacing: -0.02em;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.footer {
+  flex-shrink: 0;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+  background: rgba(20, 16, 13, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(242, 184, 75, 0.08);
+}
+
+.enviarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 54px;
+  border-radius: 14px;
+  background: var(--color-gold);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.enviarBtn:hover:not(:disabled) {
+  background: #f5c940;
+}
+
+.enviarBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.enviarBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Post-send state ─────────────────────────────────────────────────── */
+.exitoWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 20px 4px;
+  gap: 6px;
+}
+
+.exitoIcono {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.exitoTitulo {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  margin: 4px 0 0;
+}
+
+.exitoDesc {
+  font-size: 0.875rem;
+  color: rgba(201, 188, 166, 0.6);
+  line-height: 1.5;
+  max-width: 320px;
+  margin: 0;
+}
+
+.exitoGuardando {
+  font-size: 0.8125rem;
+  color: rgba(201, 188, 166, 0.5);
+  margin: 8px 0 0;
+  font-style: italic;
+}
+
+.exitoErrorGuardando {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #f87171;
+  margin: 8px 0 0;
+  text-align: center;
+  max-width: 300px;
+}
+
+.botonesPostEnvio {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.reenviarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(242, 184, 75, 0.1);
+  border: 1px solid rgba(242, 184, 75, 0.25);
+  color: var(--color-gold);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.reenviarBtn:hover:not(:disabled) {
+  background: rgba(242, 184, 75, 0.18);
+}
+
+.reenviarBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.inicioBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-radius: 12px;
+  background: var(--color-gold);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.inicioBtn:hover {
+  background: #f5c940;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+  .seccion {
+    padding: 20px 32px 0;
+  }
+
+  .separator {
+    margin: 0 32px;
+  }
+
+  .header {
+    padding: 0 32px;
+  }
+
+  .footer {
+    padding: 16px 32px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .mapaWrap {
+    height: 300px;
+  }
+}
+
+@media (min-width: 768px) {
+  .overlay {
+    align-items: center;
+  }
+
+  /* Center the content like a modal/drawer at wider viewports */
+  .header,
+  .body,
+  .footer {
+    width: 100%;
+    max-width: 680px;
+    align-self: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    animation: none;
+  }
+
+  .enviarBtn,
+  .reenviarBtn,
+  .inicioBtn {
+    transition: none;
+  }
+}

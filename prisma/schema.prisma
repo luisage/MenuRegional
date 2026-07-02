@@ -1,0 +1,537 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum TipoEnvio {
+  RECOGER_EN_SUCURSAL
+  ENVIO_A_DOMICILIO
+  COMER_EN_LUGAR
+}
+
+enum TipoPago {
+  EFECTIVO
+  TRANSFERENCIA
+  TARJETA
+}
+
+enum EstadoPedido {
+  PENDIENTE      // Recién creado, enviado por WhatsApp
+  CONFIRMADO     // El restaurante lo aceptó
+  EN_PREPARACION
+  EN_CAMINO      // Solo para envío a domicilio
+  LISTO          // Listo para recoger en sucursal
+  ENTREGADO
+  CANCELADO
+}
+
+enum DiaSemana {
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+  DOMINGO
+}
+
+// ============================================================
+// CUENTAS
+// ============================================================
+
+model CuentaRestaurante {
+  id          String   @id @default(cuid())
+  usuario     String   @unique
+  password    String   // Guardar siempre hasheada (bcrypt/argon2)
+  nombreDueno String
+  celular     String
+  email       String?  @unique
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  restaurante Restaurante?
+
+  @@map("cuentas_restaurante")
+}
+
+model CuentaCliente {
+  id             String   @id @default(cuid())
+  usuario        String   @unique
+  password       String   // Hasheada
+  nombre         String
+  celular        String   @unique
+  calle           String
+  numero          String   // String porque puede ser "123 B", "S/N", etc.
+  coloniaId       String
+  latitud   Decimal? @db.Decimal(10, 8)  // Ej: 20.12345678
+  longitud  Decimal? @db.Decimal(11, 8)
+  referencias    String?  // "Casa azul, portón negro", útil para repartidores
+  activa         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  colonia          Colonia   @relation(fields: [coloniaId], references: [id])
+
+  pedidos Pedido[]
+
+  @@map("cuentas_cliente")
+}
+
+// ============================================================
+// RESTAURANTE Y SUCURSALES
+// ============================================================
+
+model Restaurante {
+  id            String   @id @default(cuid())
+  nombre        String
+  descripcion   String?
+  logoUrl       String?  // URL de Cloudinary
+  logoPublicId  String?  // public_id de Cloudinary (necesario para borrar/reemplazar)
+  portadaUrl       String?  // URL de Cloudinary
+  portadaPublicId  String? 
+  slug          String   @unique // Para URLs amigables: /restaurante/tacos-don-pepe
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cuentaId String            @unique
+  cuenta   CuentaRestaurante @relation(fields: [cuentaId], references: [id], onDelete: Cascade)
+
+  planId    String?
+  plan      Plan?    @relation(fields: [planId], references: [id])
+
+  sucursales Sucursal[]
+  categorias CategoriaComida[]
+  categoriasTipo RestauranteCategoria[]
+  platillos  Platillo[]
+  pedidos    Pedido[]
+  suscripciones Suscripcion[]
+
+  @@map("restaurantes")
+}
+
+model Sucursal {
+  id              String   @id @default(cuid())
+  nombre          String
+  calle           String
+  numero          String   // String porque puede ser "123 B", "S/N", etc.
+  coloniaId       String
+
+  latitud   Decimal? @db.Decimal(10, 8)  // Ej: 20.12345678
+  longitud  Decimal? @db.Decimal(11, 8)  // Ej: -99.12345678
+  descripcion     String?
+  telefonoWhatsApp String  // Número al que se enviará el pedido por WhatsApp
+  envioDomicilio          Boolean  @default(false)
+  costoEnvio      Decimal? @db.Decimal(10, 2) // Costo base de envío a domicilio
+  descripcionEnvio String?
+  rangoEnvio   Decimal? @db.Decimal(2, 1)
+  activa          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  restauranteId String
+  restaurante   Restaurante @relation(fields: [restauranteId], references: [id], onDelete: Cascade)
+
+  colonia          Colonia   @relation(fields: [coloniaId], references: [id])
+
+  imagenes  ImagenSucursal[]
+  menus     PlatilloSucursal[]
+  pedidos   Pedido[]
+  horarios         HorarioSucursal[]
+  avisos    Aviso[]
+
+  @@index([restauranteId])
+  @@map("sucursales")
+}
+
+model HorarioSucursal {
+  id          String   @id @default(cuid())
+  sucursalId  String
+  dia         DiaSemana
+  apertura    String   // Ej: "09:00"
+  cierre      String   // Ej: "22:00"
+  abierto     Boolean  @default(true) // para marcar días cerrados sin borrar el registro
+
+  sucursal    Sucursal @relation(fields: [sucursalId], references: [id])
+
+  @@unique([sucursalId, dia]) // una sucursal no puede tener 2 registros del mismo día
+}
+
+model ImagenSucursal {
+  id        String   @id @default(cuid())
+  url       String   // URL de Cloudinary
+  publicId  String   // public_id de Cloudinary para poder eliminarla
+  orden     Int      @default(0) // Para controlar el orden en el carrusel
+  createdAt DateTime @default(now())
+
+  sucursalId String
+  sucursal   Sucursal @relation(fields: [sucursalId], references: [id], onDelete: Cascade)
+
+  @@index([sucursalId])
+  @@map("imagenes_sucursal")
+}
+
+// ============================================================
+// MENÚ: CATEGORÍAS, PLATILLOS, INGREDIENTES, EXTRAS
+// ============================================================
+
+model CategoriaComida {
+  id          String   @id @default(cuid())
+  nombre      String   // Ej: Hamburguesas, Tacos, Bebidas
+  descripcion String?
+  orden       Int      @default(0) // Orden de aparición en el menú
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  restauranteId String
+  restaurante   Restaurante @relation(fields: [restauranteId], references: [id], onDelete: Cascade)
+
+  platillos Platillo[]
+
+  @@index([restauranteId])
+  @@map("categorias_comida")
+}
+
+model Platillo {
+  id             String   @id @default(cuid())
+  nombre         String
+  tamano         String?  // Ej: Chico, Mediano, Grande
+  tipo           String?  // Ej: Vegetariano, Picante, etc.
+  costo          Decimal  @db.Decimal(10, 2)
+  descripcion    String?
+  imagenUrl      String?  // URL de Cloudinary
+  imagenPublicId String?  // public_id de Cloudinary
+  disponible     Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  restauranteId String
+  restaurante   Restaurante @relation(fields: [restauranteId], references: [id], onDelete: Cascade)
+
+  categoriaId String
+  categoria   CategoriaComida @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+
+  ingredientes PlatilloIngrediente[]
+  extras       Extra[]
+  sucursales   PlatilloSucursal[]
+  detalles     DetallePedido[]
+
+  @@index([restauranteId])
+  @@index([categoriaId])
+  @@map("platillos")
+}
+
+// Tabla puente: qué platillos están disponibles en qué sucursal
+// (permite "gestionar menús por sucursal" sin duplicar platillos)
+model PlatilloSucursal {
+  id         String   @id @default(cuid())
+  disponible Boolean  @default(true)
+  precioEspecial Decimal? @db.Decimal(10, 2) // Si la sucursal maneja otro precio (opcional)
+
+  platilloId String
+  platillo   Platillo @relation(fields: [platilloId], references: [id], onDelete: Cascade)
+
+  sucursalId String
+  sucursal   Sucursal @relation(fields: [sucursalId], references: [id], onDelete: Cascade)
+
+  @@unique([platilloId, sucursalId])
+  @@index([sucursalId])
+  @@map("platillos_sucursal")
+}
+
+// Catálogo de ingredientes (jitomate, lechuga, picante...)
+model Ingrediente {
+  id        String   @id @default(cuid())
+  nombre    String   @unique
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  platillos PlatilloIngrediente[]
+
+  @@map("ingredientes")
+}
+
+// Tabla puente: ingredientes de cada platillo (muchos a muchos)
+model PlatilloIngrediente {
+  id       String  @id @default(cuid())
+  opcional Boolean @default(true) // true = el cliente puede pedirlo "sin este ingrediente"
+
+  platilloId String
+  platillo   Platillo @relation(fields: [platilloId], references: [id], onDelete: Cascade)
+
+  ingredienteId String
+  ingrediente   Ingrediente @relation(fields: [ingredienteId], references: [id], onDelete: Cascade)
+
+  @@unique([platilloId, ingredienteId])
+  @@index([platilloId])
+  @@map("platillos_ingredientes")
+}
+
+model Extra {
+  id          String   @id @default(cuid())
+  nombre      String   // Ej: Orilla de queso
+  costo       Decimal  @db.Decimal(10, 2)
+  descripcion String?
+  disponible  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  platilloId String
+  platillo   Platillo @relation(fields: [platilloId], references: [id], onDelete: Cascade)
+
+  detalles DetallePedidoExtra[]
+
+  @@index([platilloId])
+  @@map("extras")
+}
+
+// ============================================================
+// PEDIDOS
+// ============================================================
+
+model Pedido {
+  id            String       @id @default(cuid())
+  folio         Int          @default(autoincrement()) // Número corto para mostrar al cliente/restaurante
+  estado        EstadoPedido @default(PENDIENTE)
+  tipoEnvio     TipoEnvio
+  tipoPago      TipoPago
+  subtotal      Decimal      @db.Decimal(10, 2)
+  costoEnvio    Decimal      @default(0) @db.Decimal(10, 2)
+  propina       Decimal      @default(0) @db.Decimal(10, 2)
+  costoTotal    Decimal      @db.Decimal(10, 2)
+  descripcion   String?      // Notas generales del pedido
+
+  // Snapshot de datos de entrega (por si el cliente cambia su dirección después)
+  direccionEntrega   String?
+  latitud   Decimal? @db.Decimal(10, 8)  // Ej: 20.12345678
+  longitud  Decimal? @db.Decimal(11, 8)  // Ej: -99.12345678
+  telefonoContacto   String?
+  nombreCliente      String?
+
+  whatsappEnviado Boolean  @default(false) // Si el mensaje de WhatsApp se envió con éxito
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  clienteId String?
+  cliente   CuentaCliente? @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+
+  restauranteId String
+  restaurante   Restaurante @relation(fields: [restauranteId], references: [id], onDelete: Restrict)
+
+  sucursalId String
+  sucursal   Sucursal @relation(fields: [sucursalId], references: [id], onDelete: Restrict)
+
+  detalles DetallePedido[]
+
+  @@index([clienteId])
+  @@index([restauranteId])
+  @@index([sucursalId])
+  @@index([estado])
+  @@map("pedidos")
+}
+
+model DetallePedido {
+  id             String  @id @default(cuid())
+  cantidad       Int     @default(1)
+  // Snapshots: se guardan al momento del pedido por si el platillo cambia de precio/nombre después
+  nombrePlatillo String
+  precioUnitario Decimal @db.Decimal(10, 2)
+  costoTotal     Decimal @db.Decimal(10, 2) // (precioUnitario + extras) * cantidad
+  descripcion    String? // Notas del platillo: "sin jitomate, sin picante"
+
+  pedidoId String
+  pedido   Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  platilloId String?
+  platillo   Platillo? @relation(fields: [platilloId], references: [id], onDelete: SetNull)
+
+  extras DetallePedidoExtra[]
+
+  @@index([pedidoId])
+  @@map("detalles_pedido")
+}
+
+// Extras que el cliente eligió para un platillo del pedido
+model DetallePedidoExtra {
+  id          String  @id @default(cuid())
+  // Snapshots del extra al momento del pedido
+  nombreExtra String
+  costoExtra  Decimal @db.Decimal(10, 2)
+
+  detalleId String
+  detalle   DetallePedido @relation(fields: [detalleId], references: [id], onDelete: Cascade)
+
+  extraId String?
+  extra   Extra?  @relation(fields: [extraId], references: [id], onDelete: SetNull)
+
+  @@index([detalleId])
+  @@map("detalles_pedido_extras")
+}
+
+
+model Estado {
+  id          String      @id @default(cuid())
+  nombre      String      @unique
+  activo      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  municipios  Municipio[]
+}
+
+model Municipio {
+  id          String     @id @default(cuid())
+  nombre      String
+  estadoId    String
+  activo      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  estado      Estado     @relation(fields: [estadoId], references: [id])
+  colonias    Colonia[]
+
+  @@unique([nombre, estadoId]) // mismo municipio no se repite en el mismo estado
+}
+
+model Colonia {
+  id           String     @id @default(cuid())
+  nombre       String
+  municipioId  String
+  activo       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  municipio    Municipio  @relation(fields: [municipioId], references: [id])
+  sucursales   Sucursal[]
+  clientes     CuentaCliente[]
+
+  @@unique([nombre, municipioId]) // misma colonia no se repite en el mismo municipio
+}
+
+model CategoriaTipoComida {
+  id        String   @id @default(cuid())
+  nombre    String   @unique // Ej: "Antojitos mexicanos", "Pizzas"
+  Tipo      String
+  slug      String   @unique // Ej: "antojitos-mexicanos"
+  icono     String?  // opcional, para mostrar un ícono o emoji
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurantes RestauranteCategoria[]
+
+  @@map("categorias_tipo_comida")
+}
+
+model RestauranteCategoria {
+  id             String   @id @default(cuid())
+  restauranteId  String
+  categoriaId    String
+  createdAt      DateTime @default(now())
+
+  restaurante    Restaurante     @relation(fields: [restauranteId], references: [id], onDelete: Cascade)
+  categoria      CategoriaTipoComida @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@unique([restauranteId, categoriaId]) // evita duplicados
+  @@map("restaurante_categorias")
+}
+
+model Aviso {
+  id            String   @id @default(cuid())
+  descripcion   String
+  estatus       Boolean  @default(true) // true = activo, false = inactivo
+  fecha         String?           // fecha a partir de la cual aplica el aviso
+  imagenUrl     String?             // URL de Cloudinary
+  imagenPublicId String?            // public_id de Cloudinary (para borrar/reemplazar)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sucursalId    String
+  sucursal      Sucursal @relation(fields: [sucursalId], references: [id], onDelete: Cascade)
+
+  @@map("avisos")
+}
+
+model Plan {
+  id              String   @id @default(cuid())
+  nombre          String   @unique // "Gratis", "1 Sucursal", "Multi Sucursal"
+  slug            String   @unique // "gratis", "1-sucursal", "multi-sucursal"
+  precio          Decimal  @db.Decimal(10, 2) // 0, 200, 300
+  limitePlatillos Int?     // 10 para gratis, null = sin límite
+  limiteSucursales Int?    // 1 para plan "1 sucursal", null = sin límite
+  avisos          Boolean  @default(true)
+  activo          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  restaurantes    Restaurante[]
+  suscripciones   Suscripcion[]
+
+  @@map("planes")
+}
+model Suscripcion {
+  id              String          @id @default(cuid())
+  restauranteId   String
+  planId          String
+  fechaInicio     DateTime        @default(now())
+  fechaVencimiento DateTime       @default(now())
+  estatus         EstatusSuscripcion @default(ACTIVA)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  restaurante     Restaurante     @relation(fields: [restauranteId], references: [id], onDelete: Cascade)
+  plan            Plan            @relation(fields: [planId], references: [id])
+  pagos           Pago[]
+
+  @@map("suscripciones")
+}
+
+enum EstatusSuscripcion {
+  ACTIVA
+  VENCIDA
+  CANCELADA
+}
+model Pago {
+  id              String   @id @default(cuid())
+  suscripcionId   String
+  monto           Decimal  @db.Decimal(10, 2)
+  fechaPago       DateTime @default(now())
+  fechaVence       DateTime @default(now())
+  metodoPago      String?  // "tarjeta", "transferencia", "efectivo", etc.
+  createdAt       DateTime @default(now())
+
+  suscripcion     Suscripcion @relation(fields: [suscripcionId], references: [id], onDelete: Cascade)
+
+  @@map("pagos")
+}
+
+model User {
+  id        String      @id @default(cuid())
+  usuario   String  @unique
+  password  String
+  nombre    String?
+  apellido  String?
+  role      Role     @default(ADMIN)
+  estatus   Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}

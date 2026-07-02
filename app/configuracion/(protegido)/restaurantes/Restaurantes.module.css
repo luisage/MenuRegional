@@ -1,0 +1,355 @@
+/* ── Buscador ─────────────────────────────────────────────────────────── */
+.buscadorWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 420px;
+  margin-bottom: 20px;
+}
+
+.buscadorIcono {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  color: var(--color-sand);
+  pointer-events: none;
+}
+
+.buscadorInput {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px 0 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 239, 228, 0.16);
+  background: rgba(20, 16, 13, 0.45);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.buscadorInput::placeholder {
+  color: rgba(201, 188, 166, 0.55);
+}
+.buscadorInput:focus-visible {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.2);
+}
+
+/* ── Tabla ────────────────────────────────────────────────────────────── */
+.tabla {
+  background: linear-gradient(160deg, rgba(61, 42, 27, 0.4), rgba(20, 16, 13, 0.35));
+  border: 1px solid rgba(245, 239, 228, 0.1);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 0.6fr 0.8fr 0.8fr 0.5fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(245, 239, 228, 0.06);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-sand);
+}
+.fila:last-child {
+  border-bottom: none;
+}
+.fila:not(.encabezado) {
+  position: relative;
+}
+.fila:not(.encabezado):hover {
+  background: rgba(245, 239, 228, 0.03);
+}
+
+.encabezado {
+  background: rgba(20, 16, 13, 0.3);
+  padding: 12px 22px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-amber);
+}
+
+.nombre {
+  font-weight: 700;
+  color: var(--color-cream);
+}
+
+.badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.badgeActivo {
+  background: rgba(74, 160, 90, 0.16);
+  color: #86efac;
+  border: 1px solid rgba(74, 160, 90, 0.35);
+}
+.badgeInactivo {
+  background: rgba(192, 57, 43, 0.16);
+  color: #ff9b8a;
+  border: 1px solid rgba(192, 57, 43, 0.35);
+}
+
+.empty {
+  font-family: var(--font-sans);
+  color: var(--color-sand);
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── Menú de 3 puntos ─────────────────────────────────────────────────── */
+.menuWrap {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.menuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(245, 239, 228, 0.16);
+  background: rgba(245, 239, 228, 0.05);
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.menuBtn:hover {
+  border-color: var(--color-gold);
+  background: rgba(242, 184, 75, 0.08);
+}
+
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  background: rgba(10, 8, 6, 0.35);
+}
+
+.menuDropdown {
+  position: fixed;
+  z-index: 36;
+  min-width: 160px;
+  padding: 6px;
+  background: linear-gradient(160deg, rgba(61, 42, 27, 0.98), rgba(26, 17, 10, 0.99));
+  border: 1px solid rgba(242, 184, 75, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.menuItem:hover {
+  background: rgba(242, 184, 75, 0.1);
+  color: var(--color-gold);
+}
+
+/* ── Modales (Estatus / Plan) ────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(14, 10, 8, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.modalPanel {
+  width: 100%;
+  max-width: 400px;
+  padding: 26px 24px;
+  background: linear-gradient(160deg, rgba(61, 42, 27, 0.98), rgba(26, 17, 10, 0.99));
+  border: 1px solid rgba(242, 184, 75, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.modalTitle {
+  font-family: var(--font-serif);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  margin: 0 0 14px;
+}
+
+.modalText {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--color-sand);
+  margin: 0 0 10px;
+}
+
+.modalHint {
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  color: rgba(201, 188, 166, 0.65);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.modalError {
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #ff9b8a;
+  background: rgba(192, 57, 43, 0.16);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 0 0 16px;
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.modalLabel {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-sand);
+}
+.modalSelect,
+.modalInput {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 239, 228, 0.16);
+  background: rgba(20, 16, 13, 0.45);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 15px;
+}
+.modalSelect {
+  cursor: pointer;
+}
+.modalSelect option {
+  background: var(--color-wood);
+  color: var(--color-cream);
+}
+.modalSelect:focus-visible,
+.modalInput:focus-visible {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.2);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancelBtn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 239, 228, 0.18);
+  background: transparent;
+  color: var(--color-sand);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.cancelBtn:hover {
+  border-color: rgba(245, 239, 228, 0.35);
+  color: var(--color-cream);
+}
+
+.saveBtn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-gold);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.saveBtn:hover {
+  background: #f5c940;
+}
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Responsive: tarjetas en lugar de tabla ──────────────────────────── */
+@media (max-width: 860px) {
+  .encabezado {
+    display: none;
+  }
+
+  .fila {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 6px 12px;
+    padding: 16px;
+  }
+
+  .fila span:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 15px;
+  }
+  .fila span:nth-child(2)::before {
+    content: "Dueño: ";
+    color: rgba(201, 188, 166, 0.5);
+  }
+  .fila span:nth-child(3)::before {
+    content: "Contacto: ";
+    color: rgba(201, 188, 166, 0.5);
+  }
+  .fila span:nth-child(4)::before {
+    content: "Sucursales: ";
+    color: rgba(201, 188, 166, 0.5);
+  }
+  .fila span:nth-child(5)::before {
+    content: "Plan: ";
+    color: rgba(201, 188, 166, 0.5);
+  }
+  .fila span:nth-child(6) {
+    justify-self: start;
+  }
+  .fila span:nth-child(7) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
