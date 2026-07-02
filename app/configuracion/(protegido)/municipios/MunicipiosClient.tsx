@@ -24,7 +24,6 @@ export type ColoniaRow = {
 
 type Tab = "estados" | "municipios" | "colonias";
 type ModalTipo = "estado" | "municipio" | "colonia";
-type ModalAccion = "crear" | "editar" | "toggle";
 
 type ModalState =
   | { tipo: "estado"; accion: "crear" }

@@ -145,10 +145,7 @@ export default function Restaurantes({
 
   const maxIndex = Math.max(restaurantes.length - visible, 0);
   const pageCount = maxIndex + 1;
-
-  useEffect(() => {
-    setIndex((current) => Math.min(current, maxIndex));
-  }, [maxIndex]);
+  const effectiveIndex = Math.min(index, maxIndex);
 
   useEffect(() => {
     if (paused || maxIndex === 0) return;
@@ -194,7 +191,7 @@ export default function Restaurantes({
           <div className={styles.viewport}>
             <div
               className={styles.track}
-              style={{ "--index": index } as unknown as React.CSSProperties}
+              style={{ "--index": effectiveIndex } as unknown as React.CSSProperties}
             >
               {restaurantes.map((r) => (
                 <CardRestaurante key={r.slug} r={r} />
@@ -207,7 +204,7 @@ export default function Restaurantes({
               <button
                 type="button"
                 className={`${styles.arrow} ${styles.arrowPrev}`}
-                onClick={() => goTo(index - 1)}
+                onClick={() => goTo(effectiveIndex - 1)}
                 aria-label="Restaurante anterior"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -217,7 +214,7 @@ export default function Restaurantes({
               <button
                 type="button"
                 className={`${styles.arrow} ${styles.arrowNext}`}
-                onClick={() => goTo(index + 1)}
+                onClick={() => goTo(effectiveIndex + 1)}
                 aria-label="Siguiente restaurante"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -231,9 +228,9 @@ export default function Restaurantes({
                     key={dotIndex}
                     type="button"
                     role="tab"
-                    aria-selected={dotIndex === index}
+                    aria-selected={dotIndex === effectiveIndex}
                     aria-label={`Mostrar grupo ${dotIndex + 1} de ${pageCount}`}
-                    className={`${styles.dot} ${dotIndex === index ? styles.dotActive : ""}`}
+                    className={`${styles.dot} ${dotIndex === effectiveIndex ? styles.dotActive : ""}`}
                     onClick={() => goTo(dotIndex)}
                   />
                 ))}
@@ -242,7 +239,7 @@ export default function Restaurantes({
           )}
 
           <p className={styles.srOnly} aria-live="polite">
-            {`Mostrando restaurantes ${index + 1} a ${Math.min(index + visible, restaurantes.length)} de ${restaurantes.length}`}
+            {`Mostrando restaurantes ${effectiveIndex + 1} a ${Math.min(effectiveIndex + visible, restaurantes.length)} de ${restaurantes.length}`}
           </p>
         </div>
       </div>

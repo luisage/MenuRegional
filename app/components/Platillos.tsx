@@ -54,10 +54,7 @@ export default function Platillos({ platillos }: { platillos: PlatilloHome[] }) 
 
   const maxIndex = Math.max(platillos.length - visible, 0);
   const pageCount = maxIndex + 1;
-
-  useEffect(() => {
-    setIndex((current) => Math.min(current, maxIndex));
-  }, [maxIndex]);
+  const effectiveIndex = Math.min(index, maxIndex);
 
   useEffect(() => {
     if (paused || maxIndex === 0) return;
@@ -103,7 +100,7 @@ export default function Platillos({ platillos }: { platillos: PlatilloHome[] }) 
           <div className={styles.viewport}>
             <div
               className={styles.track}
-              style={{ "--index": index } as unknown as React.CSSProperties}
+              style={{ "--index": effectiveIndex } as unknown as React.CSSProperties}
             >
               {platillos.map((p) => (
                 <article className={styles.card} key={p.id}>
@@ -149,7 +146,7 @@ export default function Platillos({ platillos }: { platillos: PlatilloHome[] }) 
               <button
                 type="button"
                 className={`${styles.arrow} ${styles.arrowPrev}`}
-                onClick={() => goTo(index - 1)}
+                onClick={() => goTo(effectiveIndex - 1)}
                 aria-label="Platillo anterior"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -159,7 +156,7 @@ export default function Platillos({ platillos }: { platillos: PlatilloHome[] }) 
               <button
                 type="button"
                 className={`${styles.arrow} ${styles.arrowNext}`}
-                onClick={() => goTo(index + 1)}
+                onClick={() => goTo(effectiveIndex + 1)}
                 aria-label="Siguiente platillo"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -173,9 +170,9 @@ export default function Platillos({ platillos }: { platillos: PlatilloHome[] }) 
                     key={dotIndex}
                     type="button"
                     role="tab"
-                    aria-selected={dotIndex === index}
+                    aria-selected={dotIndex === effectiveIndex}
                     aria-label={`Mostrar grupo ${dotIndex + 1} de ${pageCount}`}
-                    className={`${styles.dot} ${dotIndex === index ? styles.dotActive : ""}`}
+                    className={`${styles.dot} ${dotIndex === effectiveIndex ? styles.dotActive : ""}`}
                     onClick={() => goTo(dotIndex)}
                   />
                 ))}
@@ -184,7 +181,7 @@ export default function Platillos({ platillos }: { platillos: PlatilloHome[] }) 
           )}
 
           <p className={styles.srOnly} aria-live="polite">
-            {`Mostrando platillos ${index + 1} a ${Math.min(index + visible, platillos.length)} de ${platillos.length}`}
+            {`Mostrando platillos ${effectiveIndex + 1} a ${Math.min(effectiveIndex + visible, platillos.length)} de ${platillos.length}`}
           </p>
         </div>
       </div>

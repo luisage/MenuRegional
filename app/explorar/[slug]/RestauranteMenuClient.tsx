@@ -348,6 +348,7 @@ export default function RestauranteMenuClient({
   // Close checkout automatically if cart becomes empty
   useEffect(() => {
     if (carritoAbierto && carrito.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCarritoAbierto(false);
     }
   }, [carrito.length, carritoAbierto]);

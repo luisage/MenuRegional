@@ -224,6 +224,7 @@ export default function RegistrarMenuClient({
   // ── Debounce ingredientes ──
   useEffect(() => {
     const q = ingredSearch.trim();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (q.length < 1) { setIngredSuggestions([]); setShowIngredDrop(false); setIngredLoading(false); return; }
     setIngredLoading(true);
     const t = setTimeout(async () => {
@@ -236,6 +237,7 @@ export default function RegistrarMenuClient({
   // ── Debounce extras ──
   useEffect(() => {
     const q = extraSearch.trim();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (q.length < 1) { setExtraSuggestions([]); setShowExtraDrop(false); setExtraLoading(false); return; }
     setExtraLoading(true);
     const t = setTimeout(async () => {

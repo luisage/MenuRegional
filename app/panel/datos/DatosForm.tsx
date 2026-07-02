@@ -201,6 +201,7 @@ export default function DatosForm({
   // ---- Estado: Lista de avisos ----
   const [avisos, setAvisos] = useState<AvisoItem[]>(avisosIniciales);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAvisos(avisosIniciales);
   }, [avisosIniciales]);
 
@@ -257,6 +258,7 @@ export default function DatosForm({
   // Cargar colonias al abrir el formulario de nueva sucursal
   useEffect(() => {
     if (!modoNuevaSucursal || !nuevaMunicipioId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNuevaLoadingColonias(true);
     obtenerColoniasPorMunicipio(nuevaMunicipioId).then((colonias) => {
       setNuevaColonias(colonias);

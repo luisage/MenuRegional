@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import styles from "./Hero.module.css";
 import LoginModal from "./LoginModal";
 
@@ -108,7 +109,7 @@ export default function Hero() {
               deliciosa comida.
             </p>
             <div className={`${styles.copyActions} ${styles.anim} ${styles.delay3}`}>
-              <a className={`${styles.btn} ${styles.btnPrimary}`} href="/explorar">
+              <Link className={`${styles.btn} ${styles.btnPrimary}`} href="/explorar">
                 Explorar restaurantes
                 <svg
                   width="18"
@@ -125,7 +126,7 @@ export default function Hero() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </a>
+              </Link>
               <a className={`${styles.btn} ${styles.btnOutline}`} href="#registro-restaurante">
                 Soy restaurante
               </a>

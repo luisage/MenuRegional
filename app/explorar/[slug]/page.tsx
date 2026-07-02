@@ -233,49 +233,51 @@ export default async function RestauranteMenuPage({
 
   const avisos: AvisoVista[] = avisosRaw;
 
-  let platillosContados = 0;
   const categorias: CategoriaVistaPublica[] = categoriasRaw
-    .map((c) => {
-      const platillosMapeados = c.platillos
-        .map((p) => {
-          const override = p.sucursales[0];
-          const disponibleEnSucursal = override ? override.disponible : true;
-          if (!disponibleEnSucursal) return null;
-          const costoEfectivo = override?.precioEspecial ?? p.costo;
-          return {
-            id: p.id,
-            nombre: p.nombre,
-            descripcion: p.descripcion,
-            costo: String(costoEfectivo),
-            imagenUrl: p.imagenUrl,
-            ingredientes: p.ingredientes.map((i) => ({
-              id: i.id,
-              nombre: i.ingrediente.nombre,
-              opcional: i.opcional,
-            })),
-            extras: p.extras.map((e) => ({
-              id: e.id,
-              nombre: e.nombre,
-              costo: String(e.costo),
-              descripcion: e.descripcion,
-            })),
-          };
-        })
-        .filter((p): p is PlatilloVistaPublica => p !== null);
+    .reduce<{ count: number; list: CategoriaVistaPublica[] }>(
+      (acc, c) => {
+        const platillosMapeados = c.platillos
+          .map((p) => {
+            const override = p.sucursales[0];
+            const disponibleEnSucursal = override ? override.disponible : true;
+            if (!disponibleEnSucursal) return null;
+            const costoEfectivo = override?.precioEspecial ?? p.costo;
+            return {
+              id: p.id,
+              nombre: p.nombre,
+              descripcion: p.descripcion,
+              costo: String(costoEfectivo),
+              imagenUrl: p.imagenUrl,
+              ingredientes: p.ingredientes.map((i) => ({
+                id: i.id,
+                nombre: i.ingrediente.nombre,
+                opcional: i.opcional,
+              })),
+              extras: p.extras.map((e) => ({
+                id: e.id,
+                nombre: e.nombre,
+                costo: String(e.costo),
+                descripcion: e.descripcion,
+              })),
+            };
+          })
+          .filter((p): p is PlatilloVistaPublica => p !== null);
 
-      // Aplicar límite global de platillos entre todas las categorías
-      let platillosVisibles: PlatilloVistaPublica[];
-      if (maxPlatillos === null) {
-        platillosVisibles = platillosMapeados;
-      } else {
-        const cupo = Math.max(0, maxPlatillos - platillosContados);
-        platillosVisibles = platillosMapeados.slice(0, cupo);
-      }
-      platillosContados += platillosVisibles.length;
+        // Aplicar límite global de platillos entre todas las categorías
+        const platillosVisibles =
+          maxPlatillos === null
+            ? platillosMapeados
+            : platillosMapeados.slice(0, Math.max(0, maxPlatillos - acc.count));
 
-      return { id: c.id, nombre: c.nombre, platillos: platillosVisibles };
-    })
-    .filter((c) => c.platillos.length > 0);
+        if (platillosVisibles.length === 0) return acc;
+
+        return {
+          count: acc.count + platillosVisibles.length,
+          list: [...acc.list, { id: c.id, nombre: c.nombre, platillos: platillosVisibles }],
+        };
+      },
+      { count: 0, list: [] }
+    ).list;
 
   return (
     <RestauranteMenuClient
