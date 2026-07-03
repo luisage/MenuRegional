@@ -413,26 +413,25 @@
     display: grid;
   }
 
-  /* scrim becomes vertical: dark bottom -> transparent top */
+  /* Subtle 10% dark overlay on mobile */
   .scrim {
-    background: linear-gradient(
-      0deg,
-      rgba(8, 8, 11, 0.94) 0%,
-      rgba(8, 8, 11, 0.85) 24%,
-      rgba(8, 8, 11, 0.5) 50%,
-      rgba(8, 8, 11, 0.1) 72%,
-      rgba(8, 8, 11, 0) 88%
-    );
+    background: rgba(8, 8, 11, 0.20);
   }
   .vignette {
-    background:
-      linear-gradient(180deg, rgba(8, 8, 11, 0.5) 0%, rgba(8, 8, 11, 0) 18%),
-      radial-gradient(140% 100% at 50% 60%, rgba(8, 8, 11, 0) 55%, rgba(8, 8, 11, 0.35) 100%);
+    background: none;
   }
 
+  /* Right side of video, shifted 10% left from the edge */
+  .bg video,
+  .bg img {
+    object-position: 85% center;
+  }
+
+  /* Content floats to top so video is visible below */
   .heroMain {
-    align-items: flex-end;
-    padding-bottom: clamp(48px, 9vh, 84px);
+    align-items: flex-start;
+    padding-top: clamp(16px, 3vh, 32px);
+    padding-bottom: 0;
   }
   .copy {
     max-width: 85%;
@@ -444,6 +443,9 @@
   .copyActions .btn {
     flex: 1 1 auto;
     justify-content: center;
+  }
+  .copyNote {
+    margin-top: clamp(80px, 14vh, 120px);
   }
 }
 
