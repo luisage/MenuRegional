@@ -6,6 +6,7 @@ import { obtenerSesionClienteId } from "@/app/lib/session";
 import { obtenerMunicipios } from "@/app/lib/actions/clienteAuth";
 
 import RestauranteMenuClient from "./RestauranteMenuClient";
+import RestauranteNoEncontrado from "./RestauranteNoEncontrado";
 import type { AvisoVista } from "./AvisosCarousel";
 
 export type CuentaClienteVista = {
@@ -17,6 +18,7 @@ export type CuentaClienteVista = {
 
 export type SucursalVista = {
   id: string;
+  slug: string | null;
   nombre: string;
   telefonoWhatsApp: string;
   envioDomicilio: boolean;
@@ -76,10 +78,11 @@ export default async function RestauranteMenuPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ sucursalId?: string; platilloId?: string }>;
+  searchParams: Promise<{ sucursal?: string; platilloId?: string; source?: string }>;
 }) {
   const { slug } = await params;
-  const { sucursalId: sucursalIdParam, platilloId: platilloDestacadoId } = await searchParams;
+  const { sucursal: sucursalParam, platilloId: platilloDestacadoId, source } = await searchParams;
+  const esQr = source === "qr";
 
   const [clienteId, municipios, restaurante] = await Promise.all([
     obtenerSesionClienteId(),
@@ -98,6 +101,7 @@ export default async function RestauranteMenuPage({
           orderBy: { createdAt: "asc" },
           select: {
             id: true,
+            slug: true,
             nombre: true,
             telefonoWhatsApp: true,
             envioDomicilio: true,
@@ -117,7 +121,28 @@ export default async function RestauranteMenuPage({
     }),
   ]);
 
-  if (!restaurante) notFound();
+  if (!restaurante) {
+    if (esQr) return <RestauranteNoEncontrado />;
+    notFound();
+  }
+
+  // Registrar escaneo QR (upsert manual por ausencia de unique en restauranteId)
+  if (esQr) {
+    const qrExistente = await prisma.qRMenu.findFirst({
+      where: { restauranteId: restaurante.id },
+      select: { id: true },
+    });
+    if (qrExistente) {
+      await prisma.qRMenu.update({
+        where: { id: qrExistente.id },
+        data: { escaneos: { increment: 1 } },
+      });
+    } else {
+      await prisma.qRMenu.create({
+        data: { restauranteId: restaurante.id },
+      });
+    }
+  }
 
   // Lee los límites directamente de la BD. -1 = infinito. Sin plan = valores más restrictivos.
   const plan = restaurante.plan;
@@ -140,10 +165,15 @@ export default async function RestauranteMenuPage({
       : restaurante.sucursales.slice(0, maxSucursales);
 
   const sucursalSeleccionada =
-    sucursalesVisibles.find((s) => s.id === sucursalIdParam) ?? sucursalesVisibles[0] ?? null;
+    sucursalParam
+      ? (sucursalesVisibles.find((s) => s.slug === sucursalParam) ??
+         sucursalesVisibles.find((s) => s.id === sucursalParam) ??
+         sucursalesVisibles[0])
+      : sucursalesVisibles[0] ?? null;
 
   const sucursales: SucursalVista[] = sucursalesVisibles.map((s) => ({
     id: s.id,
+    slug: s.slug,
     nombre: s.nombre,
     telefonoWhatsApp: s.telefonoWhatsApp,
     envioDomicilio: s.envioDomicilio,

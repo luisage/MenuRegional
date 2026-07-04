@@ -86,6 +86,20 @@ export function ReportesIcon() {
   );
 }
 
+export function QrIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+      <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+      <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+      <rect x="5" y="5" width="3" height="3" fill="currentColor" />
+      <rect x="16" y="5" width="3" height="3" fill="currentColor" />
+      <rect x="5" y="16" width="3" height="3" fill="currentColor" />
+      <path d="M14 14h3v3M17 17v4M14 21h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function LogoutIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">

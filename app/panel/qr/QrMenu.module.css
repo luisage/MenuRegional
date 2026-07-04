@@ -1,0 +1,135 @@
+.wrap {
+  padding: clamp(24px, 4vw, 48px);
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ---------- Header ---------- */
+.header {
+  width: 100%;
+  text-align: center;
+}
+
+.titulo {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 700;
+  color: var(--color-cream);
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+
+.desc {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: var(--color-sand);
+  line-height: 1.6;
+  max-width: 52ch;
+  margin: 0 auto;
+}
+
+/* ---------- Sucursal combo ---------- */
+.comboWrap {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comboLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-amber);
+}
+
+.combo {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(245, 239, 228, 0.06);
+  border: 1px solid rgba(245, 239, 228, 0.16);
+  border-radius: 12px;
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23C8A46E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  transition: border-color 0.2s;
+}
+
+.combo:focus {
+  outline: none;
+  border-color: var(--color-amber);
+}
+
+.combo option {
+  background: #2a1a0f;
+  color: var(--color-cream);
+}
+
+/* ---------- Canvas ---------- */
+.canvasWrap {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Download button ---------- */
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: var(--color-gold);
+  color: var(--color-espresso);
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(242, 184, 75, 0.3);
+  transition: filter 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.downloadBtn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(242, 184, 75, 0.4);
+}
+
+.downloadBtn:active {
+  transform: translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .canvasWrap {
+    max-width: 100%;
+  }
+
+  .downloadBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

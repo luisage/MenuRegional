@@ -13,6 +13,7 @@ import {
   StoreIcon,
   LogoutIcon,
   ReportesIcon,
+  QrIcon,
 } from "./icons";
 
 const navItems = [
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/panel/menu", label: "Ver menú", icon: <MenuListIcon /> },
   { href: "/panel/pedidos", label: "Ver pedidos", icon: <OrdersIcon /> },
   { href: "/panel/reportes", label: "Reportes", icon: <ReportesIcon /> },
+  { href: "/panel/qr", label: "QR del menú", icon: <QrIcon /> },
 ];
 
 type PanelShellProps = {

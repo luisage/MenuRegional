@@ -30,6 +30,19 @@ async function generarSlugUnico(nombre: string) {
   return slug;
 }
 
+async function generarSlugUnicoSucursal(nombre: string, restauranteId: string) {
+  const base = slugify(nombre) || "sucursal";
+  let slug = base;
+  let intento = 1;
+
+  while (await prisma.sucursal.findFirst({ where: { slug, restauranteId } })) {
+    intento += 1;
+    slug = `${base}-${intento}`;
+  }
+
+  return slug;
+}
+
 export async function registrarRestaurante(
   formData: FormData
 ): Promise<{ error: string } | void> {
@@ -103,6 +116,8 @@ export async function registrarRestaurante(
         },
       });
 
+      const slugSucursal = await generarSlugUnicoSucursal(nombreRestaurante, restaurante.id);
+
       await tx.sucursal.create({
         data: {
           nombre: nombreRestaurante,
@@ -111,6 +126,7 @@ export async function registrarRestaurante(
           coloniaId,
           telefonoWhatsApp: celular,
           restauranteId: restaurante.id,
+          slug: slugSucursal,
         },
       });
 

@@ -6,6 +6,32 @@ import { obtenerSesionRestauranteId } from "@/app/lib/session";
 import { subirImagen, eliminarImagen } from "@/app/lib/cloudinary";
 import { puedeAgregarAvisos, puedeAgregarSucursal } from "@/app/lib/planes";
 
+function slugify(texto: string) {
+  return texto
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+async function generarSlugUnicoSucursal(nombre: string, restauranteId: string, excludeId?: string) {
+  const base = slugify(nombre) || "sucursal";
+  let slug = base;
+  let intento = 1;
+
+  while (await prisma.sucursal.findFirst({
+    where: { slug, restauranteId, ...(excludeId ? { id: { not: excludeId } } : {}) },
+    select: { id: true },
+  })) {
+    intento += 1;
+    slug = `${base}-${intento}`;
+  }
+
+  return slug;
+}
+
 const MENSAJE_SIN_PLAN_AVISOS =
   "Tu plan actual no permite agregar avisos, promociones o eventos. Suscríbete a un plan superior para desbloquear esta función.";
 const MENSAJE_SIN_PLAN_SUCURSAL =
@@ -155,11 +181,14 @@ export async function crearSucursal(
   const colonia = await prisma.colonia.findUnique({ where: { id: coloniaId }, select: { id: true } });
   if (!colonia) return { error: "Colonia no válida." };
 
+  const slugSucursal = await generarSlugUnicoSucursal(nombre, restaurante.id);
+
   const sucursal = await prisma.sucursal.create({
     data: {
       nombre, telefonoWhatsApp, envioDomicilio, costoEnvio, descripcionEnvio,
       rangoEnvio, calle, numero, coloniaId, latitud, longitud, descripcion,
       restauranteId: restaurante.id,
+      slug: slugSucursal,
       activa: true,
     },
     select: { id: true },
@@ -179,7 +208,7 @@ export async function actualizarSucursal(
 
   const sucursal = await prisma.sucursal.findUnique({
     where: { id: sucursalId },
-    select: { restaurante: { select: { cuentaId: true } } },
+    select: { nombre: true, restauranteId: true, restaurante: { select: { cuentaId: true } } },
   });
   if (!sucursal || sucursal.restaurante.cuentaId !== cuentaId) {
     return { error: "No tienes permiso para editar esta sucursal." };
@@ -235,6 +264,11 @@ export async function actualizarSucursal(
     longitud = lng.toFixed(8);
   }
 
+  const slugData =
+    nombre !== sucursal.nombre
+      ? { slug: await generarSlugUnicoSucursal(nombre, sucursal.restauranteId, sucursalId) }
+      : {};
+
   await prisma.sucursal.update({
     where: { id: sucursalId },
     data: {
@@ -250,6 +284,7 @@ export async function actualizarSucursal(
       latitud,
       longitud,
       descripcion,
+      ...slugData,
     },
   });
 

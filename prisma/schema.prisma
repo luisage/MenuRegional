@@ -120,6 +120,7 @@ model Restaurante {
   platillos  Platillo[]
   pedidos    Pedido[]
   suscripciones Suscripcion[]
+  QRs QRMenu[]
 
   @@map("restaurantes")
 }
@@ -130,6 +131,7 @@ model Sucursal {
   calle           String
   numero          String   // String porque puede ser "123 B", "S/N", etc.
   coloniaId       String
+  slug            String?   
 
   latitud   Decimal? @db.Decimal(10, 8)  // Ej: 20.12345678
   longitud  Decimal? @db.Decimal(11, 8)  // Ej: -99.12345678
@@ -534,4 +536,17 @@ model User {
 enum Role {
   ADMIN
   USER
+}
+
+model QRMenu {
+  id          String   @id @default(cuid())
+  restauranteId  String
+  escaneos    Int      @default(1)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  restaurante    Restaurante @relation(fields: [restauranteId], references: [id])
+
+  @@map("qr_menus")
 }

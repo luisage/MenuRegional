@@ -171,25 +171,26 @@ export default function RestauranteMenuClient({
   };
 
   // ── Cambio de sucursal ───────────────────────────────────────────────
-  const [sucursalPendienteId, setSucursalPendienteId] = useState<string | null>(null);
+  const [sucursalPendienteSlug, setSucursalPendienteSlug] = useState<string | null>(null);
 
-  const solicitarCambioSucursal = (nuevaSucursalId: string) => {
-    if (!sucursal || nuevaSucursalId === sucursal.id) return;
+  const solicitarCambioSucursal = (nuevoKey: string) => {
+    const currentKey = sucursal?.slug ?? sucursal?.id ?? "";
+    if (!sucursal || nuevoKey === currentKey) return;
     if (carrito.length > 0) {
-      setSucursalPendienteId(nuevaSucursalId);
+      setSucursalPendienteSlug(nuevoKey);
     } else {
-      router.push(`?sucursalId=${nuevaSucursalId}`);
+      router.push(`?sucursal=${nuevoKey}`);
     }
   };
 
   const confirmarCambioSucursal = () => {
-    if (!sucursalPendienteId) return;
+    if (!sucursalPendienteSlug) return;
     setCarrito([]);
-    router.push(`?sucursalId=${sucursalPendienteId}`);
-    setSucursalPendienteId(null);
+    router.push(`?sucursal=${sucursalPendienteSlug}`);
+    setSucursalPendienteSlug(null);
   };
 
-  const cancelarCambioSucursal = () => setSucursalPendienteId(null);
+  const cancelarCambioSucursal = () => setSucursalPendienteSlug(null);
 
   // ── Salir al listado de restaurantes ──────────────────────────────────
   const [confirmSalirAbierto, setConfirmSalirAbierto] = useState(false);
@@ -466,12 +467,12 @@ export default function RestauranteMenuClient({
               <div className={styles.sucursalSelectWrap}>
                 <select
                   className={styles.sucursalSelect}
-                  value={sucursal?.id ?? ""}
+                  value={sucursal?.slug ?? sucursal?.id ?? ""}
                   onChange={(e) => solicitarCambioSucursal(e.target.value)}
                   aria-label="Selecciona la sucursal"
                 >
                   {sucursales.map((s) => (
-                    <option key={s.id} value={s.id}>{s.nombre}</option>
+                    <option key={s.id} value={s.slug ?? s.id}>{s.nombre}</option>
                   ))}
                 </select>
                 <span className={styles.sucursalSelectChevron} aria-hidden="true">
@@ -773,7 +774,7 @@ export default function RestauranteMenuClient({
         )}
 
         {/* ── Confirmar cambio de sucursal ── */}
-        {sucursalPendienteId && (
+        {sucursalPendienteSlug && (
           <div
             className={styles.confirmOverlay}
             role="alertdialog"
