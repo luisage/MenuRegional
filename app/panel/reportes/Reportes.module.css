@@ -238,6 +238,57 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Lectura de QR ───────────────────────────────────────────────────────── */
+.qrStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(32px, 5vw, 56px) 24px;
+  gap: 0;
+}
+
+.qrStatIcon {
+  color: var(--color-amber);
+  margin-bottom: 24px;
+  filter: drop-shadow(0 0 20px rgba(232, 169, 48, 0.3));
+  opacity: 0.9;
+}
+
+.qrStatLabel {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.5vw, 16px);
+  color: var(--color-sand);
+  line-height: 1.65;
+  max-width: 44ch;
+  margin: 0 0 28px;
+}
+
+.qrStatNum {
+  font-family: var(--font-serif);
+  font-size: clamp(72px, 12vw, 112px);
+  font-weight: 700;
+  line-height: 1;
+  margin: 0 0 12px;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-amber) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  filter: drop-shadow(0 4px 20px rgba(232, 169, 48, 0.25));
+}
+
+.qrStatUnit {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 228, 0.45);
+  margin: 0;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .chartSection {

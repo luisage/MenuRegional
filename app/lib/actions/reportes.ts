@@ -109,3 +109,18 @@ export async function obtenerReportePlatillos(
 
   return { ok: true, datos };
 }
+
+export async function obtenerReporteQR(): Promise<
+  { ok: true; escaneos: number } | { error: string }
+> {
+  const restauranteId = await getRestauranteId();
+  if (!restauranteId) return { error: "Sesión no válida." };
+
+  const registros = await prisma.qRMenu.findMany({
+    where: { restauranteId },
+    select: { escaneos: true },
+  });
+
+  const total = registros.reduce((sum, r) => sum + r.escaneos, 0);
+  return { ok: true, escaneos: total };
+}

@@ -44,18 +44,20 @@ import {
   obtenerReportePedidos,
   obtenerReporteVentas,
   obtenerReportePlatillos,
+  obtenerReporteQR,
 } from "@/app/lib/actions/reportes";
 import type { DatoPedidos, DatoVentas, DatoPlatillo } from "@/app/lib/actions/reportes";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-type TipoReporte = "pedidos" | "ventas" | "platillos";
+type TipoReporte = "pedidos" | "ventas" | "platillos" | "qr";
 type Periodo = 7 | 30;
 
 const REPORTE_LABEL: Record<TipoReporte, string> = {
   pedidos: "Pedidos por día",
   ventas: "Ventas por día",
   platillos: "Platillos más vendidos",
+  qr: "Lectura de QR",
 };
 
 // ── Chart constants ──────────────────────────────────────────────────────────
@@ -190,6 +192,20 @@ function UpsellReportes() {
 
 // ── Empty state icon ─────────────────────────────────────────────────────────
 
+function QrStatIcon() {
+  return (
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3v3M14 21h3" />
+      <rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none" />
+      <rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none" />
+      <rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 function EmptyIcon() {
   return (
     <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -239,11 +255,13 @@ export default function ReportesClient({ esGratis }: { esGratis: boolean }) {
   const [datosPedidos, setDatosPedidos] = useState<DatoPedidos[] | null>(null);
   const [datosVentas, setDatosVentas] = useState<DatoVentas[] | null>(null);
   const [datosPlatillos, setDatosPlatillos] = useState<DatoPlatillo[] | null>(null);
+  const [escaneos, setEscaneos] = useState<number | null>(null);
 
   const [cargando, startCarga] = useTransition();
   const [error, setError] = useState("");
 
   function fetchDatos(t: TipoReporte, p: Periodo) {
+    if (t === "qr") return;
     setError("");
     startCarga(async () => {
       if (t === "pedidos") {
@@ -267,12 +285,23 @@ export default function ReportesClient({ esGratis }: { esGratis: boolean }) {
     setDatosPedidos(null);
     setDatosVentas(null);
     setDatosPlatillos(null);
-    if (t) fetchDatos(t, periodo);
+    setEscaneos(null);
+    setError("");
+    if (!t) return;
+    if (t === "qr") {
+      startCarga(async () => {
+        const res = await obtenerReporteQR();
+        if ("ok" in res) setEscaneos(res.escaneos);
+        else setError(res.error);
+      });
+      return;
+    }
+    fetchDatos(t, periodo);
   }
 
   function handlePeriodo(p: Periodo) {
     setPeriodo(p);
-    if (tipo) fetchDatos(tipo, p);
+    if (tipo && tipo !== "qr") fetchDatos(tipo, p);
   }
 
   // datos actuales según tipo seleccionado
@@ -319,6 +348,7 @@ export default function ReportesClient({ esGratis }: { esGratis: boolean }) {
           <option value="pedidos">Pedidos</option>
           <option value="ventas">Ventas</option>
           <option value="platillos">Platillos más vendidos</option>
+          <option value="qr">Lectura de QR</option>
         </select>
       </div>
 
@@ -333,8 +363,45 @@ export default function ReportesClient({ esGratis }: { esGratis: boolean }) {
         </div>
       )}
 
+      {/* ── Sección QR ── */}
+      {tipo === "qr" && (
+        <div className={styles.chartSection}>
+          <div className={styles.chartHeader}>
+            <h2 className={styles.chartTitle}>Lectura de QR</h2>
+          </div>
+
+          {cargando && (
+            <div className={styles.loadingState}>
+              <div className={styles.spinner} aria-hidden />
+              <p>Cargando datos…</p>
+            </div>
+          )}
+
+          {!cargando && error && (
+            <p className={styles.errorState}>{error}</p>
+          )}
+
+          {!cargando && !error && escaneos !== null && (
+            <div className={styles.qrStat}>
+              <div className={styles.qrStatIcon} aria-hidden="true">
+                <QrStatIcon />
+              </div>
+              <p className={styles.qrStatLabel}>
+                El número de veces que ha sido escaneado el QR de tu restaurante es el siguiente:
+              </p>
+              <p className={styles.qrStatNum}>
+                {escaneos.toLocaleString("es-MX")}
+              </p>
+              <p className={styles.qrStatUnit}>
+                {escaneos === 1 ? "escaneo total" : "escaneos totales"}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── Sección de gráfica ── */}
-      {tipo && (
+      {tipo && tipo !== "qr" && (
         <div className={styles.chartSection}>
           <div className={styles.chartHeader}>
             <h2 className={styles.chartTitle}>{REPORTE_LABEL[tipo]}</h2>
