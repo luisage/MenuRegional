@@ -424,7 +424,7 @@
   /* Right side of video, shifted 10% left from the edge */
   .bg video,
   .bg img {
-    object-position: 85% center;
+    object-position: 80% center;
   }
 
   /* Content floats to top so video is visible below */
@@ -445,7 +445,7 @@
     justify-content: center;
   }
   .copyNote {
-    margin-top: clamp(80px, 14vh, 120px);
+    margin-top: clamp(110px, 18vh, 150px);
   }
 }
 
