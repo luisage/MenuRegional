@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { obtenerSesionRestauranteId } from "@/app/lib/session";
-import { subirImagen, eliminarImagen } from "@/app/lib/cloudinary";
+import { eliminarImagen } from "@/app/lib/cloudinary";
 import { puedeAgregarPlatillo } from "@/app/lib/planes";
 
 const MENSAJE_SIN_PLAN_PLATILLOS =
@@ -179,7 +179,6 @@ export async function crearPlatillo(
   const costoStr = String(formData.get("costo") || "").trim();
   const descripcion = String(formData.get("descripcion") || "").trim() || null;
   const sucursalIds = formData.getAll("sucursales").map(String).filter(Boolean);
-  const imagenRaw = formData.get("imagen");
 
   if (!nombre) return { error: "El nombre del platillo es requerido." };
   if (!categoriaId) return { error: "Selecciona una categoría." };
@@ -192,17 +191,8 @@ export async function crearPlatillo(
   });
   if (!cat) return { error: "Categoría no válida." };
 
-  let imagenUrl: string | null = null;
-  let imagenPublicId: string | null = null;
-  if (imagenRaw instanceof File && imagenRaw.size > 0) {
-    try {
-      const res = await subirImagen(imagenRaw, "menu_regional/platillos");
-      imagenUrl = res.url;
-      imagenPublicId = res.publicId;
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen." };
-    }
-  }
+  const imagenUrl = String(formData.get("imagenUrl") || "").trim() || null;
+  const imagenPublicId = String(formData.get("imagenPublicId") || "").trim() || null;
 
   const todasSucursales = restaurante.sucursales.map((s) => s.id);
   const sucursalesAsignar =
@@ -378,7 +368,6 @@ export async function editarPlatillo(
   const costoStr = String(formData.get("costo") || "").trim();
   const descripcion = String(formData.get("descripcion") || "").trim() || null;
   const sucursalIds = formData.getAll("sucursales").map(String).filter(Boolean);
-  const imagenRaw = formData.get("imagen");
 
   if (!nombre) return { error: "El nombre del platillo es requerido." };
   if (!categoriaId) return { error: "Selecciona una categoría." };
@@ -396,18 +385,16 @@ export async function editarPlatillo(
     sucursalIds.length > 0 ? sucursalIds.filter((id) => todasSucursales.includes(id)) : todasSucursales;
   if (sucursalesAsignar.length === 0) return { error: "No hay sucursales disponibles." };
 
+  const imagenUrlNueva = String(formData.get("imagenUrl") || "").trim() || null;
+  const imagenPublicIdNuevo = String(formData.get("imagenPublicId") || "").trim() || null;
+
   let imagenUrl = platilloActual.imagenUrl;
   let imagenPublicId = platilloActual.imagenPublicId;
 
-  if (imagenRaw instanceof File && imagenRaw.size > 0) {
-    try {
-      const res = await subirImagen(imagenRaw, "menu_regional/platillos");
-      if (imagenPublicId) await eliminarImagen(imagenPublicId).catch(() => {});
-      imagenUrl = res.url;
-      imagenPublicId = res.publicId;
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen." };
-    }
+  if (imagenUrlNueva && imagenPublicIdNuevo) {
+    if (imagenPublicId) await eliminarImagen(imagenPublicId).catch(() => {});
+    imagenUrl = imagenUrlNueva;
+    imagenPublicId = imagenPublicIdNuevo;
   }
 
   const ingredienteIds = formData.getAll("ingredientes").map(String).filter(Boolean);

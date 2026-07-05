@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import styles from "./Datos.module.css";
 import { actualizarRestaurante, actualizarSucursal, crearSucursal, crearAviso, editarAviso, eliminarAviso } from "@/app/lib/actions/datos";
 import { obtenerColoniasPorMunicipio } from "@/app/lib/actions/ubicacion";
+import { subirImagenDirecto } from "@/app/lib/uploadCloudinary";
 import SuscribeteModal from "../SuscribeteModal";
 
 const MapaUbicacion = dynamic(() => import("./MapaUbicacion"), {
@@ -338,13 +339,33 @@ export default function DatosForm({
   }
 
   function handleGuardarRestaurante() {
-    const fd = new FormData();
-    fd.append("descripcion", restDescripcion);
-    if (logoFile) fd.append("logo", logoFile);
-    if (portadaFile) fd.append("portada", portadaFile);
-    selectedCatIds.forEach((id) => fd.append("categoriasIds", id));
-
     startRestTransition(async () => {
+      const fd = new FormData();
+      fd.append("descripcion", restDescripcion);
+      selectedCatIds.forEach((id) => fd.append("categoriasIds", id));
+
+      if (logoFile) {
+        try {
+          const { url, publicId } = await subirImagenDirecto(logoFile, "menu_regional/restaurantes");
+          fd.append("logoUrl", url);
+          fd.append("logoPublicId", publicId);
+        } catch (err) {
+          setRestFeedback({ tipo: "error", mensaje: err instanceof Error ? err.message : "No se pudo subir el logo." });
+          return;
+        }
+      }
+
+      if (portadaFile) {
+        try {
+          const { url, publicId } = await subirImagenDirecto(portadaFile, "menu_regional/portadas");
+          fd.append("portadaUrl", url);
+          fd.append("portadaPublicId", publicId);
+        } catch (err) {
+          setRestFeedback({ tipo: "error", mensaje: err instanceof Error ? err.message : "No se pudo subir la portada." });
+          return;
+        }
+      }
+
       const result = await actualizarRestaurante(fd);
       if ("ok" in result) {
         setRestFeedback({ tipo: "ok", mensaje: "Datos del restaurante actualizados correctamente." });
@@ -449,14 +470,24 @@ export default function DatosForm({
       setAvisoFeedback({ tipo: "error", mensaje: "Selecciona al menos una sucursal." });
       return;
     }
-    const fd = new FormData();
-    fd.append("descripcion", desc);
-    fd.append("estatus", String(avisoEstatus));
-    fd.append("fecha", avisoFecha);
-    avisoSucursalesIds.forEach((id) => fd.append("sucursalIds", id));
-    if (avisoImagenFile) fd.append("imagen", avisoImagenFile);
-
     startAvisoTransition(async () => {
+      const fd = new FormData();
+      fd.append("descripcion", desc);
+      fd.append("estatus", String(avisoEstatus));
+      fd.append("fecha", avisoFecha);
+      avisoSucursalesIds.forEach((id) => fd.append("sucursalIds", id));
+
+      if (avisoImagenFile) {
+        try {
+          const { url, publicId } = await subirImagenDirecto(avisoImagenFile, "menu_regional/avisos");
+          fd.append("imagenUrl", url);
+          fd.append("imagenPublicId", publicId);
+        } catch (err) {
+          setAvisoFeedback({ tipo: "error", mensaje: err instanceof Error ? err.message : "No se pudo subir la imagen." });
+          return;
+        }
+      }
+
       const result = await crearAviso(fd);
       if ("ok" in result) {
         setModalAvisoAbierto(false);
@@ -517,17 +548,25 @@ export default function DatosForm({
       setEditFeedback({ tipo: "error", mensaje: "La descripción es requerida." });
       return;
     }
-    const fd = new FormData();
-    fd.append("descripcion", desc);
-    fd.append("estatus", String(editEstatus));
-    fd.append("fecha", editFecha);
-    if (editImagenFile) {
-      fd.append("imagen", editImagenFile);
-    } else if (editImagenPreview === null && editImagenOriginalUrl !== null) {
-      fd.append("quitarImagen", "true");
-    }
-
     startEditTransition(async () => {
+      const fd = new FormData();
+      fd.append("descripcion", desc);
+      fd.append("estatus", String(editEstatus));
+      fd.append("fecha", editFecha);
+
+      if (editImagenFile) {
+        try {
+          const { url, publicId } = await subirImagenDirecto(editImagenFile, "menu_regional/avisos");
+          fd.append("imagenUrl", url);
+          fd.append("imagenPublicId", publicId);
+        } catch (err) {
+          setEditFeedback({ tipo: "error", mensaje: err instanceof Error ? err.message : "No se pudo subir la imagen." });
+          return;
+        }
+      } else if (editImagenPreview === null && editImagenOriginalUrl !== null) {
+        fd.append("quitarImagen", "true");
+      }
+
       const result = await editarAviso(avisoEditando.ids, fd);
       if ("ok" in result) {
         cerrarEditarAviso();

@@ -16,6 +16,7 @@ import {
   crearIngrediente,
   buscarExtras,
 } from "@/app/lib/actions/menu";
+import { subirImagenDirecto } from "@/app/lib/uploadCloudinary";
 import SuscribeteModal from "../../SuscribeteModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -398,16 +399,26 @@ export default function RegistrarMenuClient({
   }
 
   function handlePlatSubmit() {
-    const fd = new FormData();
-    fd.append("nombre", platNombre); fd.append("categoriaId", platCategoriaId);
-    fd.append("tamano", platTamano); fd.append("tipo", platTipo);
-    fd.append("costo", platCosto); fd.append("descripcion", platDescripcion);
-    if (platImagen) fd.append("imagen", platImagen);
-    platSucursales.forEach((id) => fd.append("sucursales", id));
-    selectedIngredients.forEach((i) => fd.append("ingredientes", i.id));
-    fd.append("extras", JSON.stringify(selectedExtras));
-
     startPlat(async () => {
+      const fd = new FormData();
+      fd.append("nombre", platNombre); fd.append("categoriaId", platCategoriaId);
+      fd.append("tamano", platTamano); fd.append("tipo", platTipo);
+      fd.append("costo", platCosto); fd.append("descripcion", platDescripcion);
+      platSucursales.forEach((id) => fd.append("sucursales", id));
+      selectedIngredients.forEach((i) => fd.append("ingredientes", i.id));
+      fd.append("extras", JSON.stringify(selectedExtras));
+
+      if (platImagen) {
+        try {
+          const { url, publicId } = await subirImagenDirecto(platImagen, "menu_regional/platillos");
+          fd.append("imagenUrl", url);
+          fd.append("imagenPublicId", publicId);
+        } catch (err) {
+          setPlatError(err instanceof Error ? err.message : "No se pudo subir la imagen.");
+          return;
+        }
+      }
+
       const result = modoEdicion && editandoId
         ? await editarPlatillo(editandoId, fd)
         : await crearPlatillo(fd);

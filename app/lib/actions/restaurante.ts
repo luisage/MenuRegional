@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/app/lib/prisma";
 import { Prisma } from "@/app/generated/prisma/client";
 import { crearSesionRestaurante } from "@/app/lib/session";
-import { subirImagen } from "@/app/lib/cloudinary";
+// cloudinary: solo se usa para eliminar (no para subir — las subidas van directo al cliente)
 
 function slugify(texto: string) {
   return texto
@@ -55,7 +55,6 @@ export async function registrarRestaurante(
   const calle = String(formData.get("calle") || "").trim();
   const numero = String(formData.get("numero") || "").trim();
   const coloniaId = String(formData.get("coloniaId") || "").trim();
-  const imagen = formData.get("imagen");
 
   if (!nombreRestaurante || !tipoComida || !nombreDueno || !celularRaw) {
     return { error: "Por favor completa todos los campos." };
@@ -78,17 +77,8 @@ export async function registrarRestaurante(
     return { error: "Ingresa un número de celular válido (10 dígitos)." };
   }
 
-  let logoUrl: string | null = null;
-  let logoPublicId: string | null = null;
-  if (imagen instanceof File && imagen.size > 0) {
-    try {
-      const resultado = await subirImagen(imagen, "menu_regional/restaurantes");
-      logoUrl = resultado.url;
-      logoPublicId = resultado.publicId;
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen." };
-    }
-  }
+  const logoUrl = String(formData.get("logoUrl") || "").trim() || null;
+  const logoPublicId = String(formData.get("logoPublicId") || "").trim() || null;
 
   const passwordHash = await bcrypt.hash(password, 10);
   const slug = await generarSlugUnico(nombreRestaurante);

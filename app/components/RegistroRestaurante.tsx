@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import styles from "./RegistroRestaurante.module.css";
 import { registrarRestaurante } from "@/app/lib/actions/restaurante";
 import { obtenerColoniasPorMunicipio } from "@/app/lib/actions/ubicacion";
+import { subirImagenDirecto } from "@/app/lib/uploadCloudinary";
 
 type Beneficio = {
   texto: string;
@@ -301,19 +302,29 @@ export default function RegistroRestaurante({ municipios, colonias: coloniasPorD
 
     setModalError(null);
 
-    const formData = new FormData();
-    formData.set("nombreRestaurante", datos.nombreRestaurante);
-    formData.set("tipoComida", datos.tipoComida);
-    formData.set("password", datos.password);
-    formData.set("confirmarPassword", datos.confirmarPassword);
-    formData.set("nombreDueno", nombreDueno);
-    formData.set("celular", celular);
-    formData.set("calle", calle);
-    formData.set("numero", numero);
-    formData.set("coloniaId", coloniaId);
-    if (imagen) formData.set("imagen", imagen);
-
     startTransition(async () => {
+      const formData = new FormData();
+      formData.set("nombreRestaurante", datos.nombreRestaurante);
+      formData.set("tipoComida", datos.tipoComida);
+      formData.set("password", datos.password);
+      formData.set("confirmarPassword", datos.confirmarPassword);
+      formData.set("nombreDueno", nombreDueno);
+      formData.set("celular", celular);
+      formData.set("calle", calle);
+      formData.set("numero", numero);
+      formData.set("coloniaId", coloniaId);
+
+      if (imagen) {
+        try {
+          const { url, publicId } = await subirImagenDirecto(imagen, "menu_regional/restaurantes");
+          formData.set("logoUrl", url);
+          formData.set("logoPublicId", publicId);
+        } catch {
+          setModalError("No se pudo subir la imagen. Inténtalo de nuevo.");
+          return;
+        }
+      }
+
       const result = await registrarRestaurante(formData);
       if (result?.error) setModalError(result.error);
     });

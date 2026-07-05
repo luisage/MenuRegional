@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { obtenerSesionRestauranteId } from "@/app/lib/session";
-import { subirImagen, eliminarImagen } from "@/app/lib/cloudinary";
+import { eliminarImagen } from "@/app/lib/cloudinary";
 import { puedeAgregarAvisos, puedeAgregarSucursal } from "@/app/lib/planes";
 
 function slugify(texto: string) {
@@ -50,42 +50,29 @@ export async function actualizarRestaurante(
   if (!restaurante) return { error: "Restaurante no encontrado." };
 
   const descripcion = String(formData.get("descripcion") || "").trim() || null;
-  const imagenRaw = formData.get("logo");
-  const portadaRaw = formData.get("portada");
   const categoriasIds = formData.getAll("categoriasIds").map(String).filter(Boolean);
+
+  // Las imágenes ya fueron subidas directo a Cloudinary desde el cliente.
+  // El servidor solo recibe las URLs resultantes.
+  const logoUrlNueva = String(formData.get("logoUrl") || "").trim() || null;
+  const logoPublicIdNuevo = String(formData.get("logoPublicId") || "").trim() || null;
+  const portadaUrlNueva = String(formData.get("portadaUrl") || "").trim() || null;
+  const portadaPublicIdNuevo = String(formData.get("portadaPublicId") || "").trim() || null;
 
   let logoUrl: string | undefined;
   let logoPublicId: string | undefined;
-
-  if (imagenRaw instanceof File && imagenRaw.size > 0) {
-    try {
-      const resultado = await subirImagen(imagenRaw, "menu_regional/restaurantes");
-      logoUrl = resultado.url;
-      logoPublicId = resultado.publicId;
-
-      if (restaurante.logoPublicId) {
-        await eliminarImagen(restaurante.logoPublicId).catch(() => {});
-      }
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen." };
-    }
+  if (logoUrlNueva && logoPublicIdNuevo) {
+    logoUrl = logoUrlNueva;
+    logoPublicId = logoPublicIdNuevo;
+    if (restaurante.logoPublicId) await eliminarImagen(restaurante.logoPublicId).catch(() => {});
   }
 
   let portadaUrl: string | undefined;
   let portadaPublicId: string | undefined;
-
-  if (portadaRaw instanceof File && portadaRaw.size > 0) {
-    try {
-      const resultado = await subirImagen(portadaRaw, "menu_regional/portadas");
-      portadaUrl = resultado.url;
-      portadaPublicId = resultado.publicId;
-
-      if (restaurante.portadaPublicId) {
-        await eliminarImagen(restaurante.portadaPublicId).catch(() => {});
-      }
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen de portada." };
-    }
+  if (portadaUrlNueva && portadaPublicIdNuevo) {
+    portadaUrl = portadaUrlNueva;
+    portadaPublicId = portadaPublicIdNuevo;
+    if (restaurante.portadaPublicId) await eliminarImagen(restaurante.portadaPublicId).catch(() => {});
   }
 
   await prisma.$transaction(async (tx) => {
@@ -322,19 +309,8 @@ export async function crearAviso(
   const idsValidos = sucursalIds.filter((id) => validIds.has(id));
   if (idsValidos.length === 0) return { error: "Selecciona al menos una sucursal." };
 
-  let imagenUrl: string | undefined;
-  let imagenPublicId: string | undefined;
-
-  const imagenRaw = formData.get("imagen");
-  if (imagenRaw instanceof File && imagenRaw.size > 0) {
-    try {
-      const resultado = await subirImagen(imagenRaw, "menu_regional/avisos");
-      imagenUrl = resultado.url;
-      imagenPublicId = resultado.publicId;
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen." };
-    }
-  }
+  const imagenUrl = String(formData.get("imagenUrl") || "").trim() || undefined;
+  const imagenPublicId = String(formData.get("imagenPublicId") || "").trim() || undefined;
 
   await prisma.aviso.createMany({
     data: idsValidos.map((sucursalId) => ({
@@ -388,16 +364,13 @@ export async function editarAviso(
 
   const imageUpdate: { imagenUrl?: string | null; imagenPublicId?: string | null } = {};
 
-  const imagenRaw = formData.get("imagen");
-  if (imagenRaw instanceof File && imagenRaw.size > 0) {
-    try {
-      const resultado = await subirImagen(imagenRaw, "menu_regional/avisos");
-      imageUpdate.imagenUrl = resultado.url;
-      imageUpdate.imagenPublicId = resultado.publicId;
-      if (oldPublicId) await eliminarImagen(oldPublicId).catch(() => {});
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo subir la imagen." };
-    }
+  const imagenUrlNueva = String(formData.get("imagenUrl") || "").trim() || null;
+  const imagenPublicIdNuevo = String(formData.get("imagenPublicId") || "").trim() || null;
+
+  if (imagenUrlNueva && imagenPublicIdNuevo) {
+    imageUpdate.imagenUrl = imagenUrlNueva;
+    imageUpdate.imagenPublicId = imagenPublicIdNuevo;
+    if (oldPublicId) await eliminarImagen(oldPublicId).catch(() => {});
   } else if (quitarImagen) {
     if (oldPublicId) await eliminarImagen(oldPublicId).catch(() => {});
     imageUpdate.imagenUrl = null;
