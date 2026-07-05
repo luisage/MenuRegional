@@ -1,6 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { unstable_noStore as noStore } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { crearSesionCliente, obtenerSesionClienteId, eliminarSesionCliente } from "@/app/lib/session";
 import { calcularSucursalAbierta } from "@/app/lib/horario";
@@ -27,6 +28,7 @@ export async function cerrarSesionCliente(): Promise<void> {
 }
 
 export async function obtenerMunicipios(): Promise<{ id: string; nombre: string }[]> {
+  noStore();
   return prisma.municipio.findMany({
     orderBy: { nombre: "asc" },
     select: { id: true, nombre: true },
@@ -36,6 +38,7 @@ export async function obtenerMunicipios(): Promise<{ id: string; nombre: string 
 export async function obtenerColoniasPorMunicipio(
   municipioId: string
 ): Promise<{ id: string; nombre: string }[]> {
+  noStore();
   return prisma.colonia.findMany({
     where: { municipioId },
     orderBy: { nombre: "asc" },
@@ -215,6 +218,7 @@ export type SucursalUbicacion = {
 };
 
 export async function obtenerSucursalesConUbicacion(): Promise<SucursalUbicacion[]> {
+  noStore();
   const sucursales = await prisma.sucursal.findMany({
     where: {
       activa: true,
