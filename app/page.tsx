@@ -102,7 +102,7 @@ export default async function Home() {
       <Restaurantes restaurantes={restaurantesHome} />
       <Platillos platillos={platillosHome} />
       <Nosotros />
-      <RegistroUsuario />
+      <RegistroUsuario municipios={municipios} />
       <RegistroRestaurante
         municipios={municipios}
         colonias={coloniasPorDefecto}

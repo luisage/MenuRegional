@@ -124,8 +124,8 @@ export default function Footer() {
             © {year} Menú Regional. Todos los derechos reservados.
           </p>
           <div className={styles.legal}>
-            <a href="#">Términos y condiciones</a>
-            <a href="#">Aviso de privacidad</a>
+            <a href="/terminos">Términos y condiciones</a>
+            <a href="/privacidad">Aviso de privacidad</a>
           </div>
         </div>
       </div>

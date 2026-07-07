@@ -1243,12 +1243,14 @@ export default function ExplorarClient({
   platillos,
   promociones,
   clienteLogueado,
+  primerNombre,
   municipios,
 }: {
   restaurantes: RestauranteExplora[];
   platillos: PlatilloExplora[];
   promociones: AvisoVista[];
   clienteLogueado: boolean;
+  primerNombre: string | null;
   municipios: MunicipioOpt[];
 }) {
   const router = useRouter();
@@ -1483,6 +1485,9 @@ export default function ExplorarClient({
       <section className={styles.searchHero}>
         <div className={styles.searchHeroGlow} aria-hidden="true" />
         <div className={styles.searchHeroContent}>
+          {primerNombre && (
+            <p className={styles.bienvenido}>Bienvenido {primerNombre}</p>
+          )}
           <h1 className={styles.searchTitle}>¿Qué se te antoja hoy?</h1>
           <p className={styles.searchSub}>
             Explora restaurantes y platillos de tu región

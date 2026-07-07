@@ -61,6 +61,17 @@ export default async function ExplorarPage({
   ]);
   const clienteLogueado = clienteId !== null;
 
+  let primerNombre: string | null = null;
+  if (clienteId) {
+    const cuenta = await prisma.cuentaCliente.findUnique({
+      where: { id: clienteId },
+      select: { nombre: true },
+    });
+    primerNombre = cuenta?.nombre
+      ? cuenta.nombre.trim().split(/\s+/)[0]
+      : null;
+  }
+
   const restaurantesRaw = await prisma.restaurante.findMany({
     where: { activo: true },
     select: {
@@ -169,6 +180,7 @@ export default async function ExplorarPage({
       platillos={platillos}
       promociones={promociones}
       clienteLogueado={clienteLogueado}
+      primerNombre={primerNombre}
       municipios={municipios}
     />
   );
