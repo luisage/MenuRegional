@@ -23,10 +23,11 @@ function CloseIcon() {
 type LoginModalProps = {
   open: boolean;
   onClose: () => void;
+  tipoCuentaInicial?: TipoCuenta;
 };
 
-export default function LoginModal({ open, onClose }: LoginModalProps) {
-  const [tipoCuenta, setTipoCuenta] = useState<TipoCuenta>("usuario");
+export default function LoginModal({ open, onClose, tipoCuentaInicial = "usuario" }: LoginModalProps) {
+  const [tipoCuenta, setTipoCuenta] = useState<TipoCuenta>(tipoCuentaInicial);
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +52,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
   if (!open) return null;
 
   function handleClose() {
-    setTipoCuenta("usuario");
+    setTipoCuenta(tipoCuentaInicial);
     setUsuario("");
     setPassword("");
     setError(null);

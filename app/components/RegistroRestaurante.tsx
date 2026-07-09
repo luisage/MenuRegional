@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import styles from "./RegistroRestaurante.module.css";
 import { registrarRestaurante } from "@/app/lib/actions/restaurante";
+import LoginModal from "./LoginModal";
 import { obtenerColoniasPorMunicipio } from "@/app/lib/actions/ubicacion";
 import { subirImagenDirecto } from "@/app/lib/uploadCloudinary";
 
@@ -176,6 +177,7 @@ export default function RegistroRestaurante({ municipios, colonias: coloniasPorD
   const [loadingColonias, setLoadingColonias] = useState(false);
 
   const [isPending, startTransition] = useTransition();
+  const [loginOpen, setLoginOpen] = useState(false);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -430,6 +432,17 @@ export default function RegistroRestaurante({ municipios, colonias: coloniasPorD
             <button type="submit" className={styles.submit}>
               Registrar restaurante
             </button>
+
+            <p className={styles.formFooter}>
+              ¿Ya tienes cuenta?{" "}
+              <button
+                type="button"
+                className={styles.loginLink}
+                onClick={() => setLoginOpen(true)}
+              >
+                Inicia sesión
+              </button>
+            </p>
           </form>
         </div>
 
@@ -451,6 +464,12 @@ export default function RegistroRestaurante({ municipios, colonias: coloniasPorD
           </ul>
         </div>
       </div>
+
+      <LoginModal
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        tipoCuentaInicial="restaurante"
+      />
 
       {modalOpen && (
         <div
@@ -484,7 +503,7 @@ export default function RegistroRestaurante({ municipios, colonias: coloniasPorD
             <form className={styles.form} onSubmit={handleRegistrar}>
               {/* Imagen */}
               <div className={styles.field}>
-                <span className={styles.label}>Imagen del restaurante</span>
+                <span className={styles.label}>Logo del restaurante</span>
                 <label className={styles.imageUpload}>
                   {imagenPreview ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -540,6 +559,9 @@ export default function RegistroRestaurante({ municipios, colonias: coloniasPorD
                   value={celular}
                   onChange={(e) => setCelular(e.target.value)}
                 />
+                <p className={`${styles.hint} ${styles.hintAmber}`}>
+                  El número de celular será el usuario de tu cuenta.
+                </p>
               </div>
 
               {/* Calle y Número en fila */}

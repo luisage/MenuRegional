@@ -159,6 +159,30 @@
   line-height: 1.4;
   color: rgba(201, 188, 166, 0.75);
 }
+.hintAmber {
+  color: var(--color-amber);
+}
+
+.formFooter {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-sand);
+}
+
+.loginLink {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-gold);
+  font-weight: 600;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+.loginLink:hover {
+  text-decoration: underline;
+}
 
 .select {
   width: 100%;
